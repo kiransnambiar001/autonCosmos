@@ -12,13 +12,13 @@ public class FourWheelDrive  extends LinearOpMode {
 
 
     // Create hardware object
-    Hardware robot = new Hardware();
+    Hardware robotHardware = new Hardware();
 
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Hardware robot = new Hardware();
+        robotHardware.initialize(hardwareMap);
 
         // update telemetry to show INITIALIZED status
         telemetry.addData("Status", "INITIALIZED");
