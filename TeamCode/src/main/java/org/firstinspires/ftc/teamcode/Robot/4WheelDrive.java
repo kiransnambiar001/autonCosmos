@@ -8,29 +8,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
 @TeleOp(name="4Wheel Drive OpMode", group="LinearOpMode")
-public class main extends LinearOpMode {
+public class FourWheelDrive  extends LinearOpMode {
 
 
-    // Define motor variables for 4 wheel drive
-    public DcMotor frontLeft;
-    public DcMotor frontRight;
-    public DcMotor backLeft;
-    public DcMotor backRight;
+    // Create hardware object
+    Hardware robot = new Hardware();
 
 
     @Override
     public void runOpMode() throws InterruptedException {
-        // Init hardwareMaps for each motor
-        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
-        backRight = hardwareMap.get(DcMotor.class, "backRight");
 
-        // Set directions for each motor
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.FORWARD);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        backRight.setDirection(DcMotor.Direction.FORWARD);
+        Hardware robot = new Hardware();
 
         // update telemetry to show INITIALIZED status
         telemetry.addData("Status", "INITIALIZED");
@@ -64,13 +52,13 @@ public class main extends LinearOpMode {
             backLeft.setPower(backLeftPower);
             backRight.setPower(backRightPower);
 
-            // Telemetry
+            /* Telemetry
             telemetry.addData("Status", "RUNNING");
             telemetry.addData("FrontLeft Motor Power", frontLeftPower);
             telemetry.addData("FrontRight Motor Power", frontRightPower);
             telemetry.addData("BackLeft Motor Power", backLeftPower);
             telemetry.addData("BackRight Motor Power", backRightPower);
-            telemetry.update();
+            telemetry.update();*/
         }
     }
 }
