@@ -44,6 +44,7 @@ public class FourWheelDrive  extends LinearOpMode {
                 slowMode = !slowMode;
                 speedMultiplier = slowMode ? 0.3 : 1.0;
             }
+            button1prevState = button1state;
 
             // Calculate motor powers
             double frontLeftPower = (axial + lateral + yaw)*speedMultiplier;
