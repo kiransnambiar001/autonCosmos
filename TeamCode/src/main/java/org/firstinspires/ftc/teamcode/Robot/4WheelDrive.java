@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-
+import org.firstinspires.ftc.teamcode.Robot.Hardware;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode; // For linear OpModes
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp; // For TeleOp OpModes
 import com.qualcomm.robotcore.hardware.DcMotor; // For DC motors
@@ -27,30 +27,48 @@ public class FourWheelDrive  extends LinearOpMode {
         // wait for user to press start button
         waitForStart();
 
+        float speedMultiplier = 1.0f;
+        boolean button1prevState = false;
+        boolean slowMode = false;
+
         // start OpMode loop
         while (opModeIsActive()) {
             // get data from controller
             double axial = -gamepad1.left_stick_y; // forward/backward driving
             double lateral = gamepad1.left_stick_x; // strafing
             double yaw = gamepad1.right_stick_x; // turning
+            boolean button1state = gamepad1.b; // slow mode
+
+
+            if (button1state == true && button1prevState == false) {
+                slowMode = !slowMode;
+                speedMultiplier = slowMode ? 0.3 : 1.0;
+            }
 
             // Calculate motor powers
-            double frontLeftPower = axial + lateral + yaw;
-            double frontRightPower = axial - lateral - yaw;
-            double backLeftPower = axial - lateral + yaw;
-            double backRightPower = axial + lateral - yaw;
+            double frontLeftPower = (axial + lateral + yaw)*speedMultiplier;
+            double frontRightPower = (axial - lateral - yaw)*speedMultiplier;
+            double backLeftPower = (axial - lateral + yaw)*speedMultiplier;
+            double backRightPower = (axial + lateral - yaw)*speedMultiplier;
 
             // limit max motor power
-            frontLeftPower = Math.max(-1.0,Math.min(1.0, frontLeftPower));
-            frontRightPower = Math.max(-1.0,Math.min(1.0, frontRightPower));
-            backLeftPower = Math.max(-1.0,Math.min(1.0, backLeftPower));
-            backRightPower = Math.max(-1.0,Math.min(1.0, backRightPower));
+            double maxPower = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
+            maxPower = Math.max(maxPower, Math.abs(backLeftPower));
+            maxPower = Math.max(maxPower, Math.abs(backRightPower));
+
+            // If the calculated max power is greater than 1.0, scale all powers down proportionally.
+            if (maxPower > 1.0) {
+                frontLeftPower  /= maxPower;
+                frontRightPower /= maxPower;
+                backLeftPower   /= maxPower;
+                backRightPower  /= maxPower;
+            }
 
             // set motor power based on values
-            frontLeft.setPower(frontLeftPower);
-            frontRight.setPower(frontRightPower);
-            backLeft.setPower(backLeftPower);
-            backRight.setPower(backRightPower);
+            robotHardware.frontLeft.setPower(frontLeftPower);
+            robotHardware.frontRight.setPower(frontRightPower);
+            robotHardware.backLeft.setPower(backLeftPower);
+            robotHardware.backRight.setPower(backRightPower);
 
             /* Telemetry
             telemetry.addData("Status", "RUNNING");
