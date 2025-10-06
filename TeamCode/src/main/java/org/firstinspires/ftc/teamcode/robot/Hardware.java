@@ -1,15 +1,17 @@
-package org.firstinspires.ftc.teamcode.Robot;
+package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Imu;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+
+
 public class Hardware {
     public DcMotor frontLeft;
     public DcMotor frontRight;
     public DcMotor backLeft;
     public DcMotor backRight;
-    public Imu imu;
+    public IMU imu;
     // Init hardwareMaps
     public void initialize(HardwareMap hardwareMap) {
 
@@ -17,7 +19,7 @@ public class Hardware {
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
-        imu = hardwareMap.get(Imu.class, "imu");
+        imu = hardwareMap.get(IMU.class, "imu");
 
         // Set motor zero power behavior to brake instead of move freely
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -30,7 +32,7 @@ public class Hardware {
         backLeft.setDirection(DcMotor.Direction.REVERSE);
 
         // Initialize the IMU
-        Imu.Parameters parameters = new Imu.Parameters(new RevHubOrientationOnRobot(
+        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
         ));
