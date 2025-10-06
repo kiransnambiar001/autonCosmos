@@ -1,13 +1,13 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.robot;
 
-import org.firstinspires.ftc.teamcode.Robot.Hardware;
+import org.firstinspires.ftc.teamcode.robot.Hardware;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode; // For linear OpModes
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp; // For TeleOp OpModes
 import com.qualcomm.robotcore.hardware.DcMotor; // For DC motors
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
-@TeleOp(name="FourWheel Drive OpMode", group="LinearOpMode")
+@TeleOp(name="FourWheelDrive OpMode", group="LinearOpMode")
 
 public class FourWheelDrive  extends LinearOpMode {
 
@@ -43,7 +43,7 @@ public class FourWheelDrive  extends LinearOpMode {
 
             if (button1state == true && button1prevState == false) {
                 slowMode = !slowMode;
-                speedMultiplier = slowMode ? 0.3 : 1.0;
+                speedMultiplier = (float) (slowMode ? 0.3 : 1.0);
             }
             button1prevState = button1state;
 
