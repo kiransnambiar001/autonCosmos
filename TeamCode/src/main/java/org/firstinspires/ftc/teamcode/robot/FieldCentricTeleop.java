@@ -1,29 +1,31 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.robot.Hardware;
-
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode; // For linear OpModes
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp; // For TeleOp OpModes
 import com.qualcomm.robotcore.hardware.DcMotor; // For DC motors
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+//import IMU
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 
+// create classes for motors
 
-@TeleOp(name="FourWheelDrive OpMode", group="LinearOpMode")
+@TeleOp(name="FieldCentric TeleOp", group="LinearOpMode")
 
-public class FourWheelDrive  extends LinearOpMode {
+public class FieldCentricTeleop  extends LinearOpMode {
 
 
     // Create hardware object
     Hardware robotHardware = new Hardware();
 
-    // create classes for motors
     public DcMotor frontLeft;
     public DcMotor frontRight;
     public DcMotor backRight;
     public DcMotor backLeft;
+
+    // Init hardwareMaps for each motor
 
 
     @Override
@@ -31,7 +33,6 @@ public class FourWheelDrive  extends LinearOpMode {
 
         robotHardware.initialize(hardwareMap);
 
-        // Init hardwareMaps for each motor
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
@@ -43,19 +44,6 @@ public class FourWheelDrive  extends LinearOpMode {
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.FORWARD);
 
-        // imu setup
-        IMU imu = hardwareMap.get(IMU.class, "imu");
-        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
-        ));
-        imu.initialize(parameters);
-        imu.resetYaw();
-
-
-        float speedMultiplier = 1.0f;
-        boolean slowMode = false;
-
         // update telemetry to show INITIALIZED status
         telemetry.addData("Status", "INITIALIZED");
         telemetry.update();
@@ -63,33 +51,30 @@ public class FourWheelDrive  extends LinearOpMode {
         // wait for user to press start button
         waitForStart();
 
-        boolean button1PrevState = false;
+        float speedMultiplier = 1.0f;
+        boolean button1prevState = false;
+        boolean slowMode = false;
 
         // start OpMode loop
         while (opModeIsActive()) {
-
             // get data from controller
             double ly = -gamepad1.left_stick_y; // forward/backward driving
             double lx = gamepad1.left_stick_x; // strafing
             double rx = gamepad1.right_stick_x; // turning
             boolean button1state = gamepad1.b; // slow mode
 
-            double heading = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
-            double adjustedLx = -ly*Math.sin(heading) + lx*Math.cos(heading);
-            double adjustedLy = ly*Math.cos(heading) + lx*Math.sin(heading);
-
-
-            if (button1state && !button1PrevState) {
+            if (button1state) {
                 slowMode = !slowMode;
                 speedMultiplier = (float) (slowMode ? 0.3 : 1.0);
             }
+            button1prevState = button1state;
 
             // Calculate motor powers
-            double frontLeftPower = (adjustedLy + adjustedLx + rx)*speedMultiplier;
-            double frontRightPower = (adjustedLy - adjustedLx - rx)*speedMultiplier;
-            double backLeftPower = (adjustedLy - adjustedLx + rx)*speedMultiplier;
-            double backRightPower = (adjustedLy + adjustedLx - rx)*speedMultiplier;
+            double frontLeftPower = (ly + lx + rx)*speedMultiplier;
+            double frontRightPower = (ly - lx - rx)*speedMultiplier;
+            double backLeftPower = (ly - lx + rx)*speedMultiplier;
+            double backRightPower = (ly + lx - rx)*speedMultiplier;
 
             // limit max motor power
             double maxPower = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
@@ -109,9 +94,6 @@ public class FourWheelDrive  extends LinearOpMode {
             robotHardware.frontRight.setPower(frontRightPower);
             robotHardware.backLeft.setPower(backLeftPower);
             robotHardware.backRight.setPower(backRightPower);
-
-            button1PrevState = button1state;
-
 
             /* Telemetry
             telemetry.addData("Status", "RUNNING");
