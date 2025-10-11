@@ -29,7 +29,9 @@ public class Hardware {
 
         // Set directions for each motor
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        frontRight.setDirection(DcMotor.Direction.FORWARD);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
+        backRight.setDirection(DcMotor.Direction.FORWARD);
 
         // Initialize the IMU
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(

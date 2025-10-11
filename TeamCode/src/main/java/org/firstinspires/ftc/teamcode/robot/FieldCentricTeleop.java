@@ -10,8 +10,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 
-// create classes for motors
-
 @TeleOp(name="FieldCentric TeleOp", group="LinearOpMode")
 
 public class FieldCentricTeleop  extends LinearOpMode {
@@ -20,29 +18,12 @@ public class FieldCentricTeleop  extends LinearOpMode {
     // Create hardware object
     Hardware robotHardware = new Hardware();
 
-    public DcMotor frontLeft;
-    public DcMotor frontRight;
-    public DcMotor backRight;
-    public DcMotor backLeft;
-
-    // Init hardwareMaps for each motor
-
 
     @Override
     public void runOpMode() throws InterruptedException {
 
+        // use hardware class to initialize everything (code in Hardware file)
         robotHardware.initialize(hardwareMap);
-
-        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
-        backRight = hardwareMap.get(DcMotor.class, "backRight");
-
-        // Set directions for each motor
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.FORWARD);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        backRight.setDirection(DcMotor.Direction.FORWARD);
 
         // update telemetry to show INITIALIZED status
         telemetry.addData("Status", "INITIALIZED");
@@ -62,7 +43,6 @@ public class FieldCentricTeleop  extends LinearOpMode {
             double lx = gamepad1.left_stick_x; // strafing
             double rx = gamepad1.right_stick_x; // turning
             boolean button1state = gamepad1.b; // slow mode
-
 
             if (button1state) {
                 slowMode = !slowMode;
@@ -102,7 +82,6 @@ public class FieldCentricTeleop  extends LinearOpMode {
             telemetry.addData("BackLeft Motor Power", backLeftPower);
             telemetry.addData("BackRight Motor Power", backRightPower);
             telemetry.update();*/
-            //Im stupi
         }
     }
 }
