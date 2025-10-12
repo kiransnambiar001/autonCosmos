@@ -45,22 +45,16 @@ public class RobotCentricTeleop extends LinearOpMode {
             double rx = gamepad1.right_stick_x; // turning
             boolean button1state = gamepad1.b; // slow mode
 
-            double heading = -robotHardware.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-
-            double adjustedLx = -ly*Math.sin(heading) + lx*Math.cos(heading);
-            double adjustedLy = ly*Math.cos(heading) + lx*Math.sin(heading);
-
-
             if (button1state && !button1PrevState) {
                 slowMode = !slowMode;
                 speedMultiplier = (float) (slowMode ? 0.3 : 1.0);
             }
 
             // Calculate motor powers
-            double frontLeftPower = (adjustedLy + adjustedLx + rx)*speedMultiplier;
-            double frontRightPower = (adjustedLy - adjustedLx - rx)*speedMultiplier;
-            double backLeftPower = (adjustedLy - adjustedLx + rx)*speedMultiplier;
-            double backRightPower = (adjustedLy + adjustedLx - rx)*speedMultiplier;
+            double frontLeftPower = (ly + lx + rx)*speedMultiplier;
+            double frontRightPower = (ly - lx - rx)*speedMultiplier;
+            double backLeftPower = (ly - lx + rx)*speedMultiplier;
+            double backRightPower = (ly + lx - rx)*speedMultiplier;
 
             // limit max motor power
             double maxPower = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));

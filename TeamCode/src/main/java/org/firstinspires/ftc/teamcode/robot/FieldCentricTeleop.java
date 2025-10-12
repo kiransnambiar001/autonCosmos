@@ -1,14 +1,15 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import org.firstinspires.ftc.teamcode.robot.Hardware;
+import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode; // For linear OpModes
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp; // For TeleOp OpModes
-import com.qualcomm.robotcore.hardware.DcMotor; // For DC motors
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
-//import IMU
-import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.arcrobotics.ftclib.geometry.Pose2d;
+import com.arcrobotics.ftclib.geometry.Rotation2d;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
 
 @TeleOp(name="FieldCentric TeleOp", group="LinearOpMode")
 
@@ -17,6 +18,8 @@ public class FieldCentricTeleop  extends LinearOpMode {
 
     // Create hardware object
     Hardware robotHardware = new Hardware();
+
+    ElapsedTime timer = new ElapsedTime();
 
 
     @Override
@@ -29,6 +32,7 @@ public class FieldCentricTeleop  extends LinearOpMode {
         telemetry.addData("Status", "INITIALIZED");
         telemetry.update();
 
+        timer.reset();
         // wait for user to press start button
         waitForStart();
 
@@ -38,23 +42,32 @@ public class FieldCentricTeleop  extends LinearOpMode {
 
         // start OpMode loop
         while (opModeIsActive()) {
+            robotHardware.odometry.updatePose();
+
+            Pose2d currentPose = robotHardware.odometry.getPose();
+            double odomHeading = currentPose.getHeading();
+
             // get data from controller
             double ly = -gamepad1.left_stick_y; // forward/backward driving
             double lx = gamepad1.left_stick_x; // strafing
             double rx = gamepad1.right_stick_x; // turning
             boolean button1state = gamepad1.b; // slow mode
 
-            if (button1state) {
+            double imuHeading = -robotHardware.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+
+            double adjustedLx = -ly*Math.sin(imuHeading) + lx*Math.cos(imuHeading);
+            double adjustedLy = ly*Math.cos(imuHeading) + lx*Math.sin(imuHeading);
+
+            if (button1state && !button1prevState) {
                 slowMode = !slowMode;
                 speedMultiplier = (float) (slowMode ? 0.3 : 1.0);
             }
-            button1prevState = button1state;
 
             // Calculate motor powers
-            double frontLeftPower = (ly + lx + rx)*speedMultiplier;
-            double frontRightPower = (ly - lx - rx)*speedMultiplier;
-            double backLeftPower = (ly - lx + rx)*speedMultiplier;
-            double backRightPower = (ly + lx - rx)*speedMultiplier;
+            double frontLeftPower = (adjustedLy + adjustedLx + rx)*speedMultiplier;
+            double frontRightPower = (adjustedLy - adjustedLx - rx)*speedMultiplier;
+            double backLeftPower = (adjustedLy - adjustedLx + rx)*speedMultiplier;
+            double backRightPower = (adjustedLy + adjustedLx - rx)*speedMultiplier;
 
             // limit max motor power
             double maxPower = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
@@ -82,6 +95,8 @@ public class FieldCentricTeleop  extends LinearOpMode {
             telemetry.addData("BackLeft Motor Power", backLeftPower);
             telemetry.addData("BackRight Motor Power", backRightPower);
             telemetry.update();*/
+
+            button1prevState = button1state;
         }
     }
 }
