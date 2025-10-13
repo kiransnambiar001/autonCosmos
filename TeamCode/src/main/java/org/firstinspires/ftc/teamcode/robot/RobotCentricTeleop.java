@@ -81,7 +81,8 @@ public class RobotCentricTeleop extends LinearOpMode {
             /* Telemetry
             telemetry.addData("Status", "RUNNING");
             telemetry.addData("FrontLeft Motor Power", frontLeftPower);
-            telemetry.addData("FrontRight Motor Power", frontRightPower);
+            telemetry.addData
+            ("FrontRight Motor Power", frontRightPower);
             telemetry.addData("BackLeft Motor Power", backLeftPower);
             telemetry.addData("BackRight Motor Power", backRightPower);
             telemetry.update();*/

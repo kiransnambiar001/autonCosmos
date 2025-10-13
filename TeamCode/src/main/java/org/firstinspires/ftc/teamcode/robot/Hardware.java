@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 
-// import ftclib odometery
+// import ftclib odometry
 import com.arcrobotics.ftclib.kinematics.HolonomicOdometry;
 
 

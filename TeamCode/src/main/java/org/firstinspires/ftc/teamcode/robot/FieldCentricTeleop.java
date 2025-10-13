@@ -21,6 +21,9 @@ public class FieldCentricTeleop  extends LinearOpMode {
 
     ElapsedTime timer = new ElapsedTime();
 
+    HeadingKalmanFilter kalmanFilter = new HeadingKalmanFilter(0); // the initial heading of the robot is 0
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -32,9 +35,11 @@ public class FieldCentricTeleop  extends LinearOpMode {
         telemetry.addData("Status", "INITIALIZED");
         telemetry.update();
 
-        timer.reset();
         // wait for user to press start button
         waitForStart();
+
+        timer.reset();
+        double lastTime = timer.seconds();
 
         float speedMultiplier = 1.0f;
         boolean button1prevState = false;
@@ -42,27 +47,37 @@ public class FieldCentricTeleop  extends LinearOpMode {
 
         // start OpMode loop
         while (opModeIsActive()) {
-            robotHardware.odometry.updatePose();
+            double currentTime = timer.seconds();
+            double dt = currentTime - lastTime; // in seconds
 
+            // odometry
+            robotHardware.odometry.updatePose();
             Pose2d currentPose = robotHardware.odometry.getPose();
-            double odomHeading = currentPose.getHeading();
+            double odomHeading = currentPose.getHeading(); // in radians
+
+            // imu
+            double imuHeading = -robotHardware.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+
+            // Kalman Filter
+            kalmanFilter.predict(dt);
+            kalmanFilter.update(imuHeading, odomHeading);
+            double kalmanHeading = kalmanFilter.getHeading();
 
             // get data from controller
             double ly = -gamepad1.left_stick_y; // forward/backward driving
             double lx = gamepad1.left_stick_x; // strafing
             double rx = gamepad1.right_stick_x; // turning
-            boolean button1state = gamepad1.b; // slow mode
 
-            double imuHeading = -robotHardware.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-
-            double adjustedLx = -ly*Math.sin(imuHeading) + lx*Math.cos(imuHeading);
-            double adjustedLy = ly*Math.cos(imuHeading) + lx*Math.sin(imuHeading);
-
+            // slow mode
+            boolean button1state = gamepad1.b;
             if (button1state && !button1prevState) {
                 slowMode = !slowMode;
                 speedMultiplier = (float) (slowMode ? 0.3 : 1.0);
             }
 
+            // field centric calculations
+            double adjustedLx = -ly*Math.sin(kalmanHeading) + lx*Math.cos(kalmanHeading);
+            double adjustedLy = ly*Math.cos(kalmanHeading) + lx*Math.sin(kalmanHeading);
             // Calculate motor powers
             double frontLeftPower = (adjustedLy + adjustedLx + rx)*speedMultiplier;
             double frontRightPower = (adjustedLy - adjustedLx - rx)*speedMultiplier;
@@ -88,15 +103,16 @@ public class FieldCentricTeleop  extends LinearOpMode {
             robotHardware.backLeft.setPower(backLeftPower);
             robotHardware.backRight.setPower(backRightPower);
 
-            /* Telemetry
-            telemetry.addData("Status", "RUNNING");
-            telemetry.addData("FrontLeft Motor Power", frontLeftPower);
-            telemetry.addData("FrontRight Motor Power", frontRightPower);
-            telemetry.addData("BackLeft Motor Power", backLeftPower);
-            telemetry.addData("BackRight Motor Power", backRightPower);
-            telemetry.update();*/
-
             button1prevState = button1state;
+
+            // Telemetry
+            telemetry.addData("Status", "RUNNING");
+            telemetry.addData("Odometry Heading", odomHeading);
+            telemetry.addData("IMU Heading", imuHeading);
+            telemetry.addData("Kalman Heading", kalmanHeading);
+            telemetry.addData("Slow Mode", (slowMode ? "On" : "Off"));
+            telemetry.update();
+
         }
     }
 }
