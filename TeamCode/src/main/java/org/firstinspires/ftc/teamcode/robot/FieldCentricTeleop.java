@@ -4,7 +4,6 @@ import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode; // For linear OpModes
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp; // For TeleOp OpModes
 
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
 
@@ -18,8 +17,6 @@ public class FieldCentricTeleop  extends LinearOpMode {
 
     // Create hardware object
     Hardware robotHardware = new Hardware();
-
-    ElapsedTime timer = new ElapsedTime();
 
     HeadingKalmanFilter kalmanFilter = new HeadingKalmanFilter(0); // the initial heading of the robot is 0
 
@@ -38,8 +35,7 @@ public class FieldCentricTeleop  extends LinearOpMode {
         // wait for user to press start button
         waitForStart();
 
-        timer.reset();
-        double lastTime = timer.seconds();
+        double lastTime = robotHardware.timer.seconds();
 
         float speedMultiplier = 1.0f;
         boolean button1prevState = false;
@@ -47,7 +43,7 @@ public class FieldCentricTeleop  extends LinearOpMode {
 
         // start OpMode loop
         while (opModeIsActive()) {
-            double currentTime = timer.seconds();
+            double currentTime = robotHardware.timer.seconds();
             double dt = currentTime - lastTime; // in seconds
 
             // odometry
@@ -105,6 +101,7 @@ public class FieldCentricTeleop  extends LinearOpMode {
 
             button1prevState = button1state;
 
+
             // Telemetry
             telemetry.addData("Status", "RUNNING");
             telemetry.addData("Odometry Heading", odomHeading);
@@ -113,6 +110,7 @@ public class FieldCentricTeleop  extends LinearOpMode {
             telemetry.addData("Slow Mode", (slowMode ? "On" : "Off"));
             telemetry.update();
 
+            lastTime = currentTime;
         }
     }
 }

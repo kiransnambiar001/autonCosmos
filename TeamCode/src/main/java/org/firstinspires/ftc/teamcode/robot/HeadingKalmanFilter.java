@@ -10,7 +10,7 @@ public class HeadingKalmanFilter {
     private final double[][] Q = {{0.001, 0}, {0, 0.01}};
 
     // Measurement noise
-    private final double R_imu = 0.03;
+    private final double R_imu  = 0.03;
     private final double R_odo = 0.05;
 
     public HeadingKalmanFilter(double initialHeading) {

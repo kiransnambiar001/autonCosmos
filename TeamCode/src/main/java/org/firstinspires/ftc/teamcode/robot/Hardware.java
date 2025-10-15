@@ -12,6 +12,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 // import ftclib odometry
 import com.arcrobotics.ftclib.kinematics.HolonomicOdometry;
 
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 public class Hardware {
@@ -20,6 +21,7 @@ public class Hardware {
     public DcMotor backLeft;
     public DcMotor backRight;
     public IMU imu;
+    public ElapsedTime timer;
 
     // odometry setup TODO: USE MILLIMETRES AS UNIT
     public static final double TRACK_WIDTH = 373.38;
@@ -54,7 +56,7 @@ public class Hardware {
         // Initialize the IMU
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
+                RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
         ));
         imu.initialize(parameters);
 
@@ -74,5 +76,6 @@ public class Hardware {
                 TRACK_WIDTH, CENTER_WHEEL_OFFSET
         );
 
+        timer.reset();
     }
 }
