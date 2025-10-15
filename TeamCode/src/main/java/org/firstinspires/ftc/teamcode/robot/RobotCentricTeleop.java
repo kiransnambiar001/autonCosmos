@@ -2,10 +2,15 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
+import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode; // For linear OpModes
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp; // For TeleOp OpModes
 import com.qualcomm.robotcore.hardware.IMU;
+
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 
 @TeleOp(name="RobotCentric TeleOp", group="LinearOpMode")
@@ -14,15 +19,17 @@ public class RobotCentricTeleop extends LinearOpMode {
 
 
     // Create hardware object
-    Hardware robotHardware = new Hardware();
+    Hardware robotHardware = new Hardware(gamepad1,gamepad2);
+
+    TriggerReader rt1Reader;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
 
         robotHardware.initialize(hardwareMap);
 
-        // Init hardwareMaps for each motor
-
+        rt1Reader = new TriggerReader(robotHardware.pad1, GamepadKeys.Trigger.RIGHT_TRIGGER);
 
         float speedMultiplier = 1.0f;
         boolean slowMode = false;
@@ -34,18 +41,16 @@ public class RobotCentricTeleop extends LinearOpMode {
         // wait for user to press start button
         waitForStart();
 
-        boolean button1PrevState = false;
 
         // start OpMode loop
         while (opModeIsActive()) {
 
             // get data from controller
-            double ly = -gamepad1.left_stick_y; // forward/backward driving
-            double lx = gamepad1.left_stick_x; // strafing
-            double rx = gamepad1.right_stick_x; // turning
-            boolean button1state = gamepad1.b; // slow mode
+            double ly = -(robotHardware.pad1.getLeftY()); // forward/backward driving
+            double lx = robotHardware.pad1.getLeftX(); // strafing
+            double rx = robotHardware.pad1.getRightX(); // turning
 
-            if (button1state && !button1PrevState) {
+            if (rt1Reader.isDown()) {
                 slowMode = !slowMode;
                 speedMultiplier = (float) (slowMode ? 0.3 : 1.0);
             }
@@ -75,8 +80,7 @@ public class RobotCentricTeleop extends LinearOpMode {
             robotHardware.backLeft.setPower(backLeftPower);
             robotHardware.backRight.setPower(backRightPower);
 
-            button1PrevState = button1state;
-
+            rt1Reader.readValue();
 
             /* Telemetry
             telemetry.addData("Status", "RUNNING");

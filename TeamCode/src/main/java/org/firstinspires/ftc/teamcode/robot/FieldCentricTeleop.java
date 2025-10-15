@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode; // For linear OpModes
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp; // For TeleOp OpModes
 
 import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
+import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
+import com.arcrobotics.ftclib.gamepad.TriggerReader;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -16,9 +19,12 @@ public class FieldCentricTeleop  extends LinearOpMode {
 
 
     // Create hardware object
-    Hardware robotHardware = new Hardware();
+    Hardware robotHardware = new Hardware(gamepad1, gamepad2);
 
     HeadingKalmanFilter kalmanFilter = new HeadingKalmanFilter(0); // the initial heading of the robot is 0
+
+    ToggleButtonReader b1Reader;
+    TriggerReader rt1Reader;
 
 
 
@@ -27,6 +33,13 @@ public class FieldCentricTeleop  extends LinearOpMode {
 
         // use hardware class to initialize everything (code in Hardware file)
         robotHardware.initialize(hardwareMap);
+
+        float speedMultiplier = 1.0f;
+        boolean slowMode = false;
+
+        b1Reader = new ToggleButtonReader(robotHardware.pad1, GamepadKeys.Button.B);
+        rt1Reader = new TriggerReader(robotHardware.pad1, GamepadKeys.Trigger.RIGHT_TRIGGER);
+
 
         // update telemetry to show INITIALIZED status
         telemetry.addData("Status", "INITIALIZED");
@@ -37,9 +50,6 @@ public class FieldCentricTeleop  extends LinearOpMode {
 
         double lastTime = robotHardware.timer.seconds();
 
-        float speedMultiplier = 1.0f;
-        boolean button1prevState = false;
-        boolean slowMode = false;
 
         // start OpMode loop
         while (opModeIsActive()) {
@@ -60,25 +70,28 @@ public class FieldCentricTeleop  extends LinearOpMode {
             double kalmanHeading = kalmanFilter.getHeading();
 
             // get data from controller
-            double ly = -gamepad1.left_stick_y; // forward/backward driving
-            double lx = gamepad1.left_stick_x; // strafing
-            double rx = gamepad1.right_stick_x; // turning
+            double ly = -(robotHardware.pad1.getLeftY()); // forward/backward driving
+            double lx = robotHardware.pad1.getLeftX(); // strafing
+            double rx = robotHardware.pad1.getRightX(); // turning
 
             // slow mode
-            boolean button1state = gamepad1.b;
-            if (button1state && !button1prevState) {
+            if (rt1Reader.isDown()) {
                 slowMode = !slowMode;
                 speedMultiplier = (float) (slowMode ? 0.3 : 1.0);
             }
 
             // field centric calculations
-            double adjustedLx = -ly*Math.sin(kalmanHeading) + lx*Math.cos(kalmanHeading);
-            double adjustedLy = ly*Math.cos(kalmanHeading) + lx*Math.sin(kalmanHeading);
+            double adjustedLy = 0;
+            double adjustedLx = 0;
+            if (b1Reader.getState()) {
+                adjustedLx = -ly * Math.sin(kalmanHeading) + lx * Math.cos(kalmanHeading);
+                adjustedLy = ly * Math.cos(kalmanHeading) + lx * Math.sin(kalmanHeading);
+            }
             // Calculate motor powers
-            double frontLeftPower = (adjustedLy + adjustedLx + rx)*speedMultiplier;
-            double frontRightPower = (adjustedLy - adjustedLx - rx)*speedMultiplier;
-            double backLeftPower = (adjustedLy - adjustedLx + rx)*speedMultiplier;
-            double backRightPower = (adjustedLy + adjustedLx - rx)*speedMultiplier;
+            double frontLeftPower = (adjustedLy + adjustedLx + rx) * speedMultiplier;
+            double frontRightPower = (adjustedLy - adjustedLx - rx) * speedMultiplier;
+            double backLeftPower = (adjustedLy - adjustedLx + rx) * speedMultiplier;
+            double backRightPower = (adjustedLy + adjustedLx - rx) * speedMultiplier;
 
             // limit max motor power
             double maxPower = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
@@ -87,10 +100,10 @@ public class FieldCentricTeleop  extends LinearOpMode {
 
             // If the calculated max power is greater than 1.0, scale all powers down proportionally.
             if (maxPower > 1.0) {
-                frontLeftPower  /= maxPower;
+                frontLeftPower /= maxPower;
                 frontRightPower /= maxPower;
-                backLeftPower   /= maxPower;
-                backRightPower  /= maxPower;
+                backLeftPower /= maxPower;
+                backRightPower /= maxPower;
             }
 
             // set motor power based on values
@@ -98,8 +111,6 @@ public class FieldCentricTeleop  extends LinearOpMode {
             robotHardware.frontRight.setPower(frontRightPower);
             robotHardware.backLeft.setPower(backLeftPower);
             robotHardware.backRight.setPower(backRightPower);
-
-            button1prevState = button1state;
 
 
             // Telemetry
@@ -110,7 +121,9 @@ public class FieldCentricTeleop  extends LinearOpMode {
             telemetry.addData("Slow Mode", (slowMode ? "On" : "Off"));
             telemetry.update();
 
-            lastTime = currentTime;
+            // update values
+            b1Reader.readValue();
+            rt1Reader.readValue();
         }
     }
 }
