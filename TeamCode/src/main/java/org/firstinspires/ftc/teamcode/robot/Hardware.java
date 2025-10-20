@@ -26,10 +26,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 public class Hardware {
-    public DcMotor frontLeft;
-    public DcMotor frontRight;
-    public DcMotor backLeft;
-    public DcMotor backRight;
+    public DcMotor frontLeft, frontRight, backLeft, backRight, intakeMotor;
     public IMU imu;
     public ElapsedTime timer;
     public GamepadEx pad1;
@@ -60,6 +57,7 @@ public class Hardware {
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
+        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         imu = hardwareMap.get(IMU.class, "imu");
 
         // Set motor zero power behavior to brake instead of move freely
@@ -67,6 +65,7 @@ public class Hardware {
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         // Set directions for each motor
         frontLeft.setDirection(DcMotor.Direction.REVERSE);

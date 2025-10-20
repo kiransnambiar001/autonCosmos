@@ -8,12 +8,13 @@ import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode; // For linear OpModes
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp; // For TeleOp OpModes
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 
-@TeleOp(name="RobotCentric TeleOp", group="LinearOpMode")
+@TeleOp(name="RobotCentric TeleOp", group="TeleOp")
 
 public class RobotCentricTeleop extends LinearOpMode {
 

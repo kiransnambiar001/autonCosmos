@@ -5,17 +5,15 @@ import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode; // For linear OpModes
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp; // For TeleOp OpModes
 
-import com.arcrobotics.ftclib.geometry.Pose2d;
-import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
-@TeleOp(name="FieldCentric TeleOp", group="LinearOpMode")
+@TeleOp(name="FieldCentric TeleOp", group="TeleOp")
 
-public class FieldCentricTeleop  extends LinearOpMode {
+public class KalmanFieldCentricTeleop extends LinearOpMode {
 
 
     // Create hardware object
