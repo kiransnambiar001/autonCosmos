@@ -19,7 +19,7 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
 
 
     // Create hardware object
-    Hardware robotHardware = new Hardware(gamepad1, gamepad2);
+    Hardware robotHardware = new Hardware();
 
     public DcMotor frontLeft;
     public DcMotor frontRight;
@@ -64,11 +64,11 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
             double ly = -gamepad1.left_stick_y; // forward/backward driving
             double lx = gamepad1.left_stick_x; // strafing
             double rx = gamepad1.right_stick_x; // turning
-            boolean home1state = gamepad1.guide;
-            boolean options1state = gamepad1.options;
-            double rt1state = gamepad1.right_trigger;
+            boolean home1state = gamepad1.guide; // to reset yaw value on gyro
+            boolean options1state = gamepad1.options; // field centric
+            double rt1state = gamepad1.right_trigger; // to power intake variably TODO: set to second gamepad later if needed
             double imuHeading = robotHardware.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-            double lt1state = gamepad1.left_trigger;
+            double lt1state = gamepad1.left_trigger; // toggle slowmode
 
             if (lt1state > 0.5) {slowMode = true;}
             else {slowMode = false;}
