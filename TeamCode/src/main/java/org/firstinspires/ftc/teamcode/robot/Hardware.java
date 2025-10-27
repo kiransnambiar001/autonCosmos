@@ -31,14 +31,14 @@ public class Hardware {
     public ElapsedTime timer;
 
     // odometry setup TODO: USE MILLIMETRES AS UNIT
-    public static final double TRACK_WIDTH = 373.38;
-    public static final double CENTER_WHEEL_OFFSET = -2.1; // perpendicular distance from center of rotation on robot IN MILLIMETRES TODO: NEEDS TUNING
-    public static final double WHEEL_DIAMETER = 48; // diameter of odometry wheels IN MILLIMETRES  TODO: NEEDS TUNING
-    public static final double TICKS_PER_REVOLUTION = 8192; // how many ticks the encoder has in a full rotation TODO: NEEDS TUNING
-    public static final double DISTANCE_PER_PULSE = Math.PI * WHEEL_DIAMETER / TICKS_PER_REVOLUTION; // distance per tick IN MILLIMETRES TODO: NEEDS TUNING
+//    public static final double TRACK_WIDTH = 373.38;
+//    public static final double CENTER_WHEEL_OFFSET = -2.1; // perpendicular distance from center of rotation on robot IN MILLIMETRES TODO: NEEDS TUNING
+//    public static final double WHEEL_DIAMETER = 48; // diameter of odometry wheels IN MILLIMETRES  TODO: NEEDS TUNING
+//    public static final double TICKS_PER_REVOLUTION = 8192; // how many ticks the encoder has in a full rotation TODO: NEEDS TUNING
+//    public static final double DISTANCE_PER_PULSE = Math.PI * WHEEL_DIAMETER / TICKS_PER_REVOLUTION; // distance per tick IN MILLIMETRES TODO: NEEDS TUNING
 
-    public MotorEx leftOdom, rightOdom, perpenOdom;
-    public HolonomicOdometry odometry;
+//    public MotorEx leftOdom, rightOdom, perpenOdom;
+//    public HolonomicOdometry odometry;
 
     // get gamepad objects
 
@@ -72,26 +72,23 @@ public class Hardware {
         ));
         imu.initialize(parameters);
 
-        // setup odometry
-        leftOdom.encoder.setDistancePerPulse(DISTANCE_PER_PULSE);
-        rightOdom.encoder.setDistancePerPulse(DISTANCE_PER_PULSE);
-        perpenOdom.encoder.setDistancePerPulse(DISTANCE_PER_PULSE);
-
-        leftOdom.setInverted(false);
-        rightOdom.setInverted(true);
-        perpenOdom.setInverted(false);
-
-        odometry = new HolonomicOdometry(
-                leftOdom::getDistance,
-                rightOdom::getDistance,
-                perpenOdom::getDistance,
-                TRACK_WIDTH, CENTER_WHEEL_OFFSET
-        );
+//        // setup odometry
+//        leftOdom.encoder.setDistancePerPulse(DISTANCE_PER_PULSE);
+//        rightOdom.encoder.setDistancePerPulse(DISTANCE_PER_PULSE);
+//        perpenOdom.encoder.setDistancePerPulse(DISTANCE_PER_PULSE);
+//
+//        leftOdom.setInverted(false);
+//        rightOdom.setInverted(true);
+//        perpenOdom.setInverted(false);
+//
+//        odometry = new HolonomicOdometry(
+//                leftOdom::getDistance,
+//                rightOdom::getDistance,
+//                perpenOdom::getDistance,
+//                TRACK_WIDTH, CENTER_WHEEL_OFFSET
+//        );
 
         timer.reset();
     }
 
-    public void updateGamepad() {
-
-    }
 }

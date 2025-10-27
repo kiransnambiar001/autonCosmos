@@ -21,10 +21,6 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
     // Create hardware object
     Hardware robotHardware = new Hardware();
 
-    public DcMotor frontLeft;
-    public DcMotor frontRight;
-    public DcMotor backRight;
-    public DcMotor backLeft;
 
     // Init hardwareMaps for each motor
 
@@ -33,17 +29,6 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         robotHardware.initialize(hardwareMap);
-
-        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
-        backRight = hardwareMap.get(DcMotor.class, "backRight");
-
-        // Set directions for each motor
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.FORWARD);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        backRight.setDirection(DcMotor.Direction.FORWARD);
 
         // update telemetry to show INITIALIZED status
         telemetry.addData("Status", "INITIALIZED");
