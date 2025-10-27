@@ -1,13 +1,8 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 // motors
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
-
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 // import imu
@@ -17,13 +12,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 // import ftclib odometry
 import com.arcrobotics.ftclib.kinematics.HolonomicOdometry;
 
-// ftc lib gamepad
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 
 public class Hardware {
     public DcMotor frontLeft, frontRight, backLeft, backRight, intakeMotor;
