@@ -28,7 +28,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Hardware {
     public DcMotor frontLeft, frontRight, backLeft, backRight, intakeMotor;
     public IMU imu;
-    public ElapsedTime timer;
+//    public ElapsedTime timer;
 
     // odometry setup TODO: USE MILLIMETRES AS UNIT
 //    public static final double TRACK_WIDTH = 373.38;
@@ -88,7 +88,7 @@ public class Hardware {
 //                TRACK_WIDTH, CENTER_WHEEL_OFFSET
 //        );
 
-        timer.reset();
+//        timer.reset();
     }
 
 }

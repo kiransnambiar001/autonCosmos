@@ -13,7 +13,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 
 // create classes for motors
 
-@TeleOp(name="FieldCentric TeleOp", group="LinearOpMode")
+@TeleOp(name="ImuFieldCentric TeleOp", group="LinearOpMode")
 
 public class ImuFieldCentricTeleop  extends LinearOpMode {
 
@@ -42,6 +42,7 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
         boolean options1prevState = false;
         boolean slowMode = false;
         boolean fieldCentric = true;
+        robotHardware.imu.resetYaw();
 
         // start OpMode loop
         while (opModeIsActive()) {
@@ -54,6 +55,8 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
             double rt1state = gamepad1.right_trigger; // to power intake variably TODO: set to second gamepad later if needed
             double imuHeading = robotHardware.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
             double lt1state = gamepad1.left_trigger; // toggle slowmode
+            boolean rb1state = gamepad1.right_bumper; // reverse intake
+            double adjLy, adjLx;
 
             if (lt1state > 0.5) {slowMode = true;}
             else {slowMode = false;}
@@ -68,21 +71,28 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
                 fieldCentric = !fieldCentric;
             } options1prevState = options1state;
 
+
             if (fieldCentric) {
-                lx = -ly * Math.sin(imuHeading) + lx * Math.cos(imuHeading);
-                ly = ly * Math.cos(imuHeading) + lx * Math.sin(imuHeading);
+                adjLx = -ly * Math.sin(imuHeading) + lx * Math.cos(imuHeading);
+                adjLy = ly * Math.cos(imuHeading) + lx * Math.sin(imuHeading);
+            }
+            else {
+                adjLx = lx; adjLy = ly;
             }
 
 
 
             // Calculate motor powers
             double intakePower;
-            if (rt1state <= 0.1) {intakePower = 0;}
-            else {intakePower = rt1state;}
-            double frontLeftPower = (ly + lx + rx)*speedMultiplier;
-            double frontRightPower = (ly - lx - rx)*speedMultiplier;
-            double backLeftPower = (ly - lx + rx)*speedMultiplier;
-            double backRightPower = (ly + lx - rx)*speedMultiplier;
+            if (rt1state >= 0.5) {intakePower = 1;}
+
+            else {intakePower=0;}
+            intakePower = (float) (rb1state ? -(intakePower): intakePower);
+
+            double frontLeftPower = (adjLy + adjLx + rx)*speedMultiplier;
+            double frontRightPower = (adjLy - adjLx - rx)*speedMultiplier;
+            double backLeftPower = (adjLy - adjLx + rx)*speedMultiplier;
+            double backRightPower = (adjLy + adjLx - rx)*speedMultiplier;
 
             // limit max motor power
             double maxPower = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
