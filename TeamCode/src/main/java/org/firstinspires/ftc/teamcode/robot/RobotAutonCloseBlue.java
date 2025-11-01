@@ -33,8 +33,8 @@ public class RobotAutonCloseBlue extends LinearOpMode {
             telemetry.addData("Status", "Running");
             telemetry.update();
 
-            drive(0.5,0.5,0.5,0.5, 1000); // forward until CLOSE shoot zone
-            drive(-0.5,0.5,-0.5,0.5,500); // turn 45 degrees to the right
+            drive(0.75,0.75,0.75,0.75, 2000); // forward until CLOSE shoot zone
+            drive(0.4,-0.4,0.4,-0.4,750); // turn 45 degrees to the right
 
             robotHardware.intakeMotor.setPower(0.7);
             robotHardware.outtakeMotor.setPower(0.7);
