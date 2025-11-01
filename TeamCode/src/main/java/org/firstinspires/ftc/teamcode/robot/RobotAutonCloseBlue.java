@@ -1,12 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * This file contains a minimal example of a Linear "OpMode". An OpMode is a 'program' that runs
@@ -18,9 +12,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Driver Station OpMode list, or add a @Disabled annotation to prevent this OpMode from being
  * added to the Driver Station.
  */
-@Autonomous(name="Robot Autonomous", group="Robot")
+@Autonomous(name="RobotAutonClose BLUE", group="Robot")
 
-public class RobotAutonomous extends LinearOpMode {
+public class RobotAutonCloseBlue extends LinearOpMode {
 
     Hardware robotHardware = new Hardware();
 
@@ -39,14 +33,14 @@ public class RobotAutonomous extends LinearOpMode {
             telemetry.addData("Status", "Running");
             telemetry.update();
 
-            robotHardware.outtakeMotor.setPower(1);
-            robotHardware.intakeMotor.setPower(1);
-            sleep(3500); // 3.5 seconds
+            drive(0.5,0.5,0.5,0.5, 1000); // forward until CLOSE shoot zone
+            drive(-0.5,0.5,-0.5,0.5,500); // turn 45 degrees to the right
 
-            robotHardware.outtakeMotor.setPower(0);
+            robotHardware.intakeMotor.setPower(0.7);
+            robotHardware.outtakeMotor.setPower(0.7);
             robotHardware.intakeMotor.setPower(0);
+            robotHardware.outtakeMotor.setPower(0);
 
-            drive(0.5,0.5,0.5,0.5,1000); // forward for 1 second
 
         }
     }
