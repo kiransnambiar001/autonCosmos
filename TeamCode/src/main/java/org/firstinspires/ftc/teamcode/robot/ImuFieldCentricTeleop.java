@@ -61,7 +61,7 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
             double lt2state = gamepad2.left_trigger; // slow mode
             boolean lb2state = gamepad2.left_bumper;
 
-            //let me push please
+
 
             double imuHeading = robotHardware.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
