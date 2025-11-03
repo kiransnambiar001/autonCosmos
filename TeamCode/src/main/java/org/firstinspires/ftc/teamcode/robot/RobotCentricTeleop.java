@@ -36,7 +36,7 @@ public class RobotCentricTeleop extends LinearOpMode {
 
         robotHardware.initialize(hardwareMap);
 
-        rt1Reader = new TriggerReader(robotHardware.pad1, GamepadKeys.Trigger.RIGHT_TRIGGER);
+        rt1Reader = new TriggerReader(pad1, GamepadKeys.Trigger.RIGHT_TRIGGER);
 
         float speedMultiplier = 1.0f;
         boolean slowMode = false;
@@ -53,9 +53,9 @@ public class RobotCentricTeleop extends LinearOpMode {
         while (opModeIsActive()) {
 
             // get data from controller
-            double ly = -(robotHardware.pad1.getLeftY()); // forward/backward driving
-            double lx = robotHardware.pad1.getLeftX(); // strafing
-            double rx = robotHardware.pad1.getRightX(); // turning
+            double ly = -(pad1.getLeftY()); // forward/backward driving
+            double lx = pad1.getLeftX(); // strafing
+            double rx = pad1.getRightX(); // turning
 
             if (rt1Reader.isDown()) {
                 slowMode = !slowMode;

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.robot;
 
 // motors
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -12,13 +13,14 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 // import ftclib odometry
 import com.arcrobotics.ftclib.kinematics.HolonomicOdometry;
 
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Hardware {
     public DcMotor frontLeft, frontRight, backLeft, backRight, intakeMotor, outtakeMotor;
     public IMU imu;
     public ElapsedTime timer;
-
+    public CRServo storage;
     // Init hardwareMaps
     public void initialize(HardwareMap hardwareMap) {
 
@@ -29,7 +31,7 @@ public class Hardware {
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         outtakeMotor = hardwareMap.get(DcMotor.class, "outtakeMotor");
         imu = hardwareMap.get(IMU.class, "imu");
-
+        storage = hardwareMap.get(CRServo.class,"storage");
         // Set motor zero power behavior to brake instead of move freely
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -37,6 +39,7 @@ public class Hardware {
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         outtakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
 
         // Set directions for each motor
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
