@@ -56,8 +56,8 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
 
 
             // gamepad2
-            double ly2 = gamepad1.left_stick_y;
-            double ry2 = gamepad1.left_stick_x;
+            double ly2 = gamepad2.left_stick_y;
+            double ry2 = gamepad2.left_stick_x;
             double lt2state = gamepad2.left_trigger; // slow mode
             boolean lb2state = gamepad2.left_bumper;
 
