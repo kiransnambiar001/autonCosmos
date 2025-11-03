@@ -13,7 +13,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 
 // create classes for motors
 
-@TeleOp(name="FieldCentric TeleOp", group="LinearOpMode")
+@TeleOp(name="ImuFieldCentric TeleOp", group="LinearOpMode")
 
 public class ImuFieldCentricTeleop  extends LinearOpMode {
 
@@ -37,81 +37,91 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
         // wait for user to press start button
         waitForStart();
 
-        float speedMultiplier = 1.0f;
         boolean home1prevState = false;
         boolean options1prevState = false;
-        boolean slowMode = false;
         boolean fieldCentric = true;
+        robotHardware.imu.resetYaw();
 
         // start OpMode loop
         while (opModeIsActive()) {
-            // get data from controller
-            double ly = -gamepad1.left_stick_y; // forward/backward driving
-            double lx = gamepad1.left_stick_x; // strafing
-            double rx = gamepad1.right_stick_x; // turning
+            // gamepad1
+            double ly1 = -gamepad1.left_stick_y; // forward/backward driving
+            double lx1 = gamepad1.left_stick_x; // strafing
+            double rx1 = gamepad1.right_stick_x; // turning
             boolean home1state = gamepad1.guide; // to reset yaw value on gyro
             boolean options1state = gamepad1.options; // field centric
-            double rt1state = gamepad1.right_trigger; // to power intake variably TODO: set to second gamepad later if needed
-            double imuHeading = robotHardware.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
             double lt1state = gamepad1.left_trigger; // toggle slowmode
 
-            if (lt1state > 0.5) {slowMode = true;}
-            else {slowMode = false;}
 
-            speedMultiplier = (float) (slowMode ? 0.3 : 1.0);
+            // gamepad2
+            double ly2 = gamepad1.left_stick_y;
+            double ry2 = gamepad1.left_stick_x;
+            double lt2state = gamepad2.left_trigger; // slow mode
 
+
+            double imuHeading = robotHardware.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+
+
+            // field centric toggles
             if (home1state && !home1prevState && fieldCentric) {
                 robotHardware.imu.resetYaw();
             } home1prevState = home1state;
-
             if (options1state && !options1prevState) {
                 fieldCentric = !fieldCentric;
             } options1prevState = options1state;
+            updateDriveBase(ly1, lx1, rx1, lt1state, imuHeading, fieldCentric);
 
-            if (fieldCentric) {
-                lx = -ly * Math.sin(imuHeading) + lx * Math.cos(imuHeading);
-                ly = ly * Math.cos(imuHeading) + lx * Math.sin(imuHeading);
-            }
-
-
-
-            // Calculate motor powers
+            // intake
             double intakePower;
-            if (rt1state <= 0.1) {intakePower = 0;}
-            else {intakePower = rt1state;}
-            double frontLeftPower = (ly + lx + rx)*speedMultiplier;
-            double frontRightPower = (ly - lx - rx)*speedMultiplier;
-            double backLeftPower = (ly - lx + rx)*speedMultiplier;
-            double backRightPower = (ly + lx - rx)*speedMultiplier;
-
-            // limit max motor power
-            double maxPower = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
-            maxPower = Math.max(maxPower, Math.abs(backLeftPower));
-            maxPower = Math.max(maxPower, Math.abs(backRightPower));
-
-            // If the calculated max power is greater than 1.0, scale all powers down proportionally.
-            if (maxPower > 1.0) {
-                frontLeftPower  /= maxPower;
-                frontRightPower /= maxPower;
-                backLeftPower   /= maxPower;
-                backRightPower  /= maxPower;
-            }
-
-            // set motor power based on values
+            if (ly2 >= 0.5) {intakePower = 1;}
+            else if (ly2 <= -0.5) {intakePower = -1;}
+            else {intakePower=0;}
             robotHardware.intakeMotor.setPower(intakePower);
-            robotHardware.frontLeft.setPower(frontLeftPower);
-            robotHardware.frontRight.setPower(frontRightPower);
-            robotHardware.backLeft.setPower(backLeftPower);
-            robotHardware.backRight.setPower(backRightPower);
 
-            /* Telemetry
-            telemetry.addData("Status", "RUNNING");
-            telemetry.addData("FrontLeft Motor Power", frontLeftPower);
-            telemetry.addData("FrontRight Motor Power", frontRightPower);
-            telemetry.addData("BackLeft Motor Power", backLeftPower);
-            telemetry.addData("BackRight Motor Power", backRightPower);
-            telemetry.update();*/
-            //Im stupi
+
+            // outtake
+            double outtakePower = ry2;
+            if (lt2state >= 0.5) {outtakePower *= 0.3;} else {outtakePower*=0.7;}
+            robotHardware.outtakeMotor.setPower(outtakePower);
         }
+    }
+    private void updateDriveBase(double ly, double lx, double rx, double lt1state, double imuHeading, boolean fieldCentric) {
+        double speedMultiplier;
+        if (lt1state > 0.5) {speedMultiplier = 0.3;}
+        else {speedMultiplier = 1.0;}
+
+
+        double adjLy, adjLx;
+
+        if (fieldCentric) {
+            adjLx = -ly * Math.sin(imuHeading) + lx * Math.cos(imuHeading);
+            adjLy = ly * Math.cos(imuHeading) + lx * Math.sin(imuHeading);
+        }
+        else {
+            adjLx = lx; adjLy = ly;
+        }
+
+        double frontLeftPower = (adjLy + adjLx + rx)*speedMultiplier;
+        double frontRightPower = (adjLy - adjLx - rx)*speedMultiplier;
+        double backLeftPower = (adjLy - adjLx + rx)*speedMultiplier;
+        double backRightPower = (adjLy + adjLx - rx)*speedMultiplier;
+
+        // limit max motor power
+        double maxPower = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
+        maxPower = Math.max(maxPower, Math.abs(backLeftPower));
+        maxPower = Math.max(maxPower, Math.abs(backRightPower));
+
+        // If the calculated max power is greater than 1.0, scale all powers down proportionally.
+        if (maxPower > 1.0) {
+            frontLeftPower  /= maxPower;
+            frontRightPower /= maxPower;
+            backLeftPower   /= maxPower;
+            backRightPower  /= maxPower;
+        }
+
+        robotHardware.frontLeft.setPower(frontLeftPower);
+        robotHardware.frontRight.setPower(frontRightPower);
+        robotHardware.backLeft.setPower(backLeftPower);
+        robotHardware.backRight.setPower(backRightPower);
     }
 }
