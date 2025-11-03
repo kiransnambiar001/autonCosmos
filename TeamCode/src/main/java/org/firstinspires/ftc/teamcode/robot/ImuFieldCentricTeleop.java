@@ -90,6 +90,8 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
             if (lb2state && !lb2prevState) {
                 robotHardware.storage.setPower(1);
             } lb2prevState = lb2state;
+            telemetry.addData("Outtake Motor",outtakePower);
+            telemetry.update();
         }
     }
     private void updateDriveBase(double ly, double lx, double rx, double lt1state, double imuHeading, boolean fieldCentric) {
