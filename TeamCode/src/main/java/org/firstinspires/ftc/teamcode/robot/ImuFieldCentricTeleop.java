@@ -40,7 +40,7 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
         boolean home1prevState = false;
         boolean options1prevState = false;
         boolean fieldCentric = true;
-        boolean lb2prevState = false;
+        boolean home2prevState = false;
 
         robotHardware.imu.resetYaw();
 
@@ -54,12 +54,11 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
             boolean options1state = gamepad1.options; // field centric
             double lt1state = gamepad1.left_trigger; // toggle slowmode
 
-
             // gamepad2
             double ly2 = gamepad2.left_stick_y;
-            double ry2 = gamepad2.left_stick_x;
+            double ry2 = gamepad2.right_stick_y;
             double lt2state = gamepad2.left_trigger; // slow mode
-            boolean lb2state = gamepad2.left_bumper;
+            boolean home2state = gamepad2.options;
 
 
 
@@ -84,13 +83,13 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
 
 
             // outtake
-            double outtakePower = ry2;
-            if (lt2state >= 0.5) {outtakePower *= 0.3;} else {outtakePower*=0.7;}
-            robotHardware.outtakeMotor.setPower(outtakePower);
-            if (lb2state && !lb2prevState) {
-                robotHardware.storage.setPower(1);
-            } lb2prevState = lb2state;
-            telemetry.addData("Outtake Motor",outtakePower);
+            double storagePower = ry2;
+            if (lt2state >= 0.5) {storagePower *= 0.7;} else {storagePower*=1;}
+            robotHardware.storage.setPower(storagePower);
+            if (home2state && !home2prevState) {
+                robotHardware.outtakeMotor.setPower(1);
+            } home2prevState = home2state;
+            telemetry.addData("Storage Motor",storagePower);
             telemetry.update();
         }
     }

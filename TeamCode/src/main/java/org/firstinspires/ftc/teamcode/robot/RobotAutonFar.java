@@ -40,6 +40,7 @@ public class RobotAutonFar extends LinearOpMode {
 
             robotHardware.outtakeMotor.setPower(0);
             robotHardware.intakeMotor.setPower(0);
+            robotHardware.storage.setPower(0);
 
             drive(0.5,0.5,0.5,0.5,1000); // forward for 1 second
 
