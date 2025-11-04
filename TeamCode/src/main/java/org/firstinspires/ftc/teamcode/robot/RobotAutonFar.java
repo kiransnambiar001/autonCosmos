@@ -33,7 +33,7 @@ public class RobotAutonFar extends LinearOpMode {
             telemetry.addData("Status", "Running");
             telemetry.update();
 
-            robotHardware.outtakeMotor.setPower(1);
+            robotHardware.outtakeMotor.setPower(0.6);
             robotHardware.intakeMotor.setPower(1);
             robotHardware.storage.setPower(1);
             sleep(3500); // 3.5 seconds
