@@ -37,7 +37,8 @@ public class RobotAutonCloseRed extends LinearOpMode {
             drive(-0.4,0.4,-0.4,0.4,750); // turn 45 degrees to the right
 
             robotHardware.intakeMotor.setPower(0.7);
-            robotHardware.outtakeMotor.setPower(0.6);
+            robotHardware.outtakeMotor.setPower(0.7);
+            robotHardware.storage.setPower(1);
             robotHardware.intakeMotor.setPower(0);
             robotHardware.outtakeMotor.setPower(0);
 
