@@ -83,13 +83,13 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
 
 
             // outtake
-            double storagePower = ry2;
-            if (lt2state >= 0.5) {storagePower *= 0.45;} else {storagePower*=0.6;}
-            robotHardware.storage.setPower(storagePower);
+            double outtakePower = ry2;
+            if (lt2state >= 0.5) {outtakePower *= 0.45;} else {outtakePower*=0.6;}
+            robotHardware.storage.setPower(outtakePower);
             if (home2state && !home2prevState) {
-                robotHardware.outtakeMotor.setPower(1);
+                robotHardware.storage.setPower(1);
             } home2prevState = home2state;
-            telemetry.addData("Storage Motor",storagePower);
+            telemetry.addData("Outtake Motor",outtakePower);
             telemetry.update();
         }
     }
