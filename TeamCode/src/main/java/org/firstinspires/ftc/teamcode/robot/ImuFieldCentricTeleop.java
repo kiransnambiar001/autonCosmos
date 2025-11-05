@@ -35,6 +35,8 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
         boolean options1prevState = false;
         boolean fieldCentric = true;
         boolean home2prevState = false;
+        int outtakePower = 0;
+        boolean storageState = false;
 
         robotHardware.imu.resetYaw();
 
@@ -53,6 +55,8 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
             double ry2 = gamepad2.right_stick_y;
             double lt2state = gamepad2.left_trigger; // slow mode
             boolean home2state = gamepad2.options;
+            boolean dpu2 = gamepad2.dpad_up;
+            boolean dpd2 = gamepad2.dpad_down;
 
 
 
@@ -76,14 +80,29 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
             robotHardware.intakeMotor.setPower(intakePower);
 
 
-            // outtake
-            double outtakePower = ry2;
+
+            // outtake power control
+            if (dpu2) {outtakePower += 50;}
+            else if (dpd2) {outtakePower -= 50;}
+
+            // outtake power limits
+            if (outtakePower >= 3000) {outtakePower = 3000;}
+            else if (outtakePower <= 0) {outtakePower = 0;}
+
+
+            // set outtake power with storage control
             if (lt2state >= 0.5) {outtakePower *= 0.45;} else {outtakePower*=0.7;}
-            robotHardware.outtakeMotor.setPower(outtakePower);
+            robotHardware.outtakeMotor.setVelocity(outtakePower);
             if (home2state && !home2prevState) {
-                robotHardware.storage.setPower(1);
+                storageState = !storageState;
+                if (storageState) {robotHardware.storage.setPower(1);}
+                else {robotHardware.storage.setPower(0);}
             } home2prevState = home2state;
+
             telemetry.addData("Outtake Motor",outtakePower);
+            telemetry.addData("Storage Motor", storageState);
+            telemetry.addData("Field Centric On?", fieldCentric ? "on":"off");
+            telemetry.update();
 
         }
     }
@@ -125,7 +144,6 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
         robotHardware.frontRight.setPower(frontRightPower);
         robotHardware.backLeft.setPower(backLeftPower);
         robotHardware.backRight.setPower(backRightPower);
-        telemetry.update();
 
     }
 }

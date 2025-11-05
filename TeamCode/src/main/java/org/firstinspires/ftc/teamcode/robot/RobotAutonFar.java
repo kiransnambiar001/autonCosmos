@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * added to the Driver Station.
  */
 @Autonomous(name="RobotAutonFar", group="Robot")
-
+    
 public class RobotAutonFar extends LinearOpMode {
 
     Hardware robotHardware = new Hardware();
