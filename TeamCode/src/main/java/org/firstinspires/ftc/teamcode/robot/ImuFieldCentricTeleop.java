@@ -1,15 +1,9 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.robot.Hardware;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode; // For linear OpModes
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp; // For TeleOp OpModes
-import com.qualcomm.robotcore.hardware.DcMotor; // For DC motors
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-//import IMU
-import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 // create classes for motors
 

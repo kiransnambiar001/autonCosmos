@@ -1,23 +1,18 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 // motors
-import com.arcrobotics.ftclib.hardware.motors.MotorEx;
+
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
-// import imu
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-
-// import ftclib odometry
-import com.arcrobotics.ftclib.kinematics.HolonomicOdometry;
-
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Hardware {
-    public DcMotor frontLeft, frontRight, backLeft, backRight, intakeMotor, outtakeMotor;
+    public DcMotor frontLeft, frontRight, backLeft, backRight, intakeMotor;
+    public DcMotorEx outtakeMotor;
     public IMU imu;
     public ElapsedTime timer;
     public CRServo storage;
@@ -29,7 +24,7 @@ public class Hardware {
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-        outtakeMotor = hardwareMap.get(DcMotor.class, "outtakeMotor");
+        outtakeMotor = hardwareMap.get(DcMotorEx.class, "outtakeMotor");
         imu = hardwareMap.get(IMU.class, "imu");
         storage = hardwareMap.get(CRServo.class,"storage");
         // Set motor zero power behavior to brake instead of move freely
