@@ -35,7 +35,7 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
         boolean options1prevState = false;
         boolean fieldCentric = true;
         boolean home2prevState = false;
-        int outtakePower = 0;
+        double outtakePower = 0;
         boolean storageState = false;
 
         robotHardware.imu.resetYaw();
@@ -82,17 +82,17 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
 
 
             // outtake power control
-            if (dpu2) {outtakePower += 50;}
-            else if (dpd2) {outtakePower -= 50;}
+            if (dpu2) {outtakePower += 0.1;}
+            else if (dpd2) {outtakePower -= 0.1;}
 
             // outtake power limits
-            if (outtakePower >= 3000) {outtakePower = 3000;}
+            if (outtakePower >= 0.7) {outtakePower = 0.7;}
             else if (outtakePower <= 0) {outtakePower = 0;}
 
 
             // set outtake power with storage control
             if (lt2state >= 0.5) {outtakePower *= 0.45;} else {outtakePower*=0.7;}
-            robotHardware.outtakeMotor.setVelocity(outtakePower);
+            robotHardware.outtakeMotor.setPower(outtakePower);
             if (home2state && !home2prevState) {
                 storageState = !storageState;
                 if (storageState) {robotHardware.storage.setPower(1);}
