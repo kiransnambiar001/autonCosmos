@@ -79,19 +79,25 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
             else {intakePower=0;}
             robotHardware.intakeMotor.setPower(intakePower);
 
+//            // outtake power control ry2
+//            if (ry2 >= 0.75) {outtakePower = 0.7;} // full power outtake
+//            else if (ry2 >= 0.5) {outtakePower = 0.5;} // half power outtake
+//            else if (ry2 >= 0.25) {outtakePower = 0.3;} // low power outtake
+//            else {outtakePower = 0;} // stop outtake
 
-
-            // outtake power control
-            if (dpu2) {outtakePower += 0.1;}
-            else if (dpd2) {outtakePower -= 0.1;}
+            // outtake power control dpad
+            if (dpu2) {outtakePower += 0.1;} // d pad up increases power
+            else if (dpd2) {outtakePower -= 0.1;} // d pad down decreases power
 
             // outtake power limits
-            if (outtakePower >= 0.7) {outtakePower = 0.7;}
-            else if (outtakePower <= 0) {outtakePower = 0;}
 
+//            if (outtakePower >= 0.7) {outtakePower = 0.7;} // max power 0.7
+//            else if (outtakePower <= 0) {outtakePower = 0;} // min power 0
+//
+            outtakePower = Math.max(0, Math.min(0.7, outtakePower));
 
             // set outtake power with storage control
-            if (lt2state >= 0.5) {outtakePower *= 0.45;} else {outtakePower*=0.7;}
+//            if (lt2state >= 0.5) {outtakePower *= 0.45;} else {outtakePower*=0.7;}
             robotHardware.outtakeMotor.setPower(outtakePower);
             if (home2state && !home2prevState) {
                 storageState = !storageState;
