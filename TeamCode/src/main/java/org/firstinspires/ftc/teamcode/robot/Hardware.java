@@ -11,6 +11,8 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Hardware {
+    public static final double OUTTAKE_TPR = 537.7;
+    public static final double OUTTAKE_MAX_RPM = 312.0 * 0.85;
     public DcMotor frontLeft, frontRight, backLeft, backRight, intakeMotor;
     public DcMotorEx outtakeMotor;
     public IMU imu;
@@ -43,7 +45,6 @@ public class Hardware {
         backRight.setDirection(DcMotor.Direction.FORWARD);
         intakeMotor.setDirection(DcMotor.Direction.FORWARD);
         outtakeMotor.setDirection(DcMotor.Direction.FORWARD);
-
 
         // Initialize the IMU
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(

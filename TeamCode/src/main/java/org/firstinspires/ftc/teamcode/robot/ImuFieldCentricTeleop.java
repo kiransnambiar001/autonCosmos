@@ -37,6 +37,10 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
         boolean home2prevState = false;
         double outtakePower = 0;
         boolean storageState = false;
+        boolean dpu2_prevState = false;
+        boolean dpd2_prevState = false;
+        boolean a2_prevState = false;
+        double storageStopTime = 0;
 
         robotHardware.imu.resetYaw();
 
@@ -54,6 +58,8 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
             double ly2 = gamepad2.left_stick_y;
             double ry2 = gamepad2.right_stick_y;
             double lt2state = gamepad2.left_trigger; // slow mode
+            boolean a2state = gamepad2.a;
+            boolean b2state = gamepad2.b;
             boolean home2state = gamepad2.options;
             boolean dpu2 = gamepad2.dpad_up;
             boolean dpd2 = gamepad2.dpad_down;
@@ -86,26 +92,46 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
 //            else {outtakePower = 0;} // stop outtake
 
             // outtake power control dpad
-            if (dpu2) {outtakePower += 0.05;} // d pad up increases power
-            else if (dpd2) {outtakePower -= 0.05;} // d pad down decreases power
+            if (dpu2 && !dpu2_prevState) {
+                outtakePower += 0.05; // Increment power percentage only once per press
+            } else if (dpd2 && !dpd2_prevState) {
+                outtakePower -= 0.05; // Decrement power percentage only once per press
+            }
 
-            // outtake power limits
+            dpu2_prevState = dpu2;
+            dpd2_prevState = dpd2;
 
-//            if (outtakePower >= 0.7) {outtakePower = 0.7;} // max power 0.7
-//            else if (outtakePower <= 0) {outtakePower = 0;} // min power 0
-//
             outtakePower = Math.max(0, Math.min(0.8, outtakePower));
 
+            double targetRpm = outtakePower * Hardware.OUTTAKE_MAX_RPM;
+            double targetTps = (targetRpm / 60.0) * Hardware.OUTTAKE_TPR;
+
+            robotHardware.outtakeMotor.setVelocity(targetTps);
+
             // set outtake power with storage control
-//            if (lt2state >= 0.5) {outtakePower *= 0.45;} else {outtakePower*=0.7;}
-            robotHardware.outtakeMotor.setPower(outtakePower);
-            if (home2state && !home2prevState) {
+            // if (lt2state >= 0.5) {outtakePower *= 0.45;} else {outtakePower*=0.7;}
+            /*if (home2state && !home2prevState) {
                 storageState = !storageState;
                 if (storageState) {robotHardware.storage.setPower(1);}
                 else {robotHardware.storage.setPower(0);}
-            } home2prevState = home2state;
+            } home2prevState = home2state;*/
+
+
+            double currentTime = robotHardware.timer.milliseconds();
+            if (a2state && !a2_prevState && !storageState) {
+                storageState = true;
+                robotHardware.storage.setPower(1.0);
+                storageStopTime = currentTime + 3000;
+            }
+            if (storageState && currentTime >= storageStopTime) {
+                storageState = false;
+                robotHardware.storage.setPower(0.0);
+            }
+            a2_prevState = a2state;
 
             telemetry.addData("Outtake Motor",outtakePower);
+            telemetry.addData("Target Velocity (tps)", targetTps);
+            telemetry.addData("Actual Velocity (tps)", robotHardware.outtakeMotor.getVelocity());
             telemetry.addData("Storage Motor", storageState);
             telemetry.addData("Field Centric On?", fieldCentric ? "on":"off");
             telemetry.update();
@@ -121,7 +147,6 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
         double adjLy, adjLx;
 
         if (fieldCentric) {
-            // This is the standard 2D rotation matrix. You were missing the first line.
             adjLx = lx * Math.cos(-imuHeading) - ly * Math.sin(-imuHeading); // THIS LINE WAS MISSING
             adjLy = lx * Math.sin(-imuHeading) + ly * Math.cos(-imuHeading);
         }
