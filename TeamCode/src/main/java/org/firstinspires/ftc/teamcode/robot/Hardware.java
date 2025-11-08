@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Hardware {
+    public static final double WHEEL_DIAMETER_CM = 9.6;//asd asd as d
     public static final double OUTTAKE_TPR = 537.7;
     public static final double OUTTAKE_MAX_RPM = 312.0 * 0.85;
     public DcMotor frontLeft, frontRight, backLeft, backRight, intakeMotor;
@@ -19,6 +20,7 @@ public class Hardware {
     public ElapsedTime timer;
     public CRServo storage;
     // Init hardwareMaps
+
     public void initialize(HardwareMap hardwareMap) {
 
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
@@ -55,6 +57,21 @@ public class Hardware {
 
         timer = new ElapsedTime();
         timer.reset();
+    }
+    public void initialize(HardwareMap hardwareMap, boolean isAuton) {
+        initialize(hardwareMap);
+
+        if (isAuton) {
+            frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
     }
 
 }

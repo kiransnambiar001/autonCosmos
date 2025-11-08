@@ -12,9 +12,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Driver Station OpMode list, or add a @Disabled annotation to prevent this OpMode from being
  * added to the Driver Station.
  */
-@Autonomous(name="RobotAutonClose RED", group="Robot")
+@Autonomous(name="RobotAutonGoalSideRed", group="Robot")
 
-public class RobotAutonCloseRed extends LinearOpMode {
+public class RobotAutonGoalSideRed extends LinearOpMode {
 
     Hardware robotHardware = new Hardware();
 

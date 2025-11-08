@@ -12,9 +12,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Driver Station OpMode list, or add a @Disabled annotation to prevent this OpMode from being
  * added to the Driver Station.
  */
-@Autonomous(name="RobotAutonFar", group="Robot")
-    
-public class RobotAutonFar extends LinearOpMode {
+@Autonomous(name="RobotAutonGoalSideBlue", group="Robot")
+
+public class RobotAutonGoalSideBlue extends LinearOpMode {
 
     Hardware robotHardware = new Hardware();
 
@@ -33,16 +33,14 @@ public class RobotAutonFar extends LinearOpMode {
             telemetry.addData("Status", "Running");
             telemetry.update();
 
-            robotHardware.outtakeMotor.setPower(0.6);
-            robotHardware.intakeMotor.setPower(1);
-            robotHardware.storage.setPower(1);
-            sleep(3500); // 3.5 seconds
+            drive(0.75,0.75,0.75,0.75, 2000); // forward until CLOSE shoot zone
+            drive(0.4,-0.4,0.4,-0.4,750); // turn 45 degrees to the right
 
-            robotHardware.outtakeMotor.setPower(0);
+            robotHardware.intakeMotor.setPower(0.7);
+            robotHardware.outtakeMotor.setPower(0.7);
             robotHardware.intakeMotor.setPower(0);
-            robotHardware.storage.setPower(0);
+            robotHardware.outtakeMotor.setPower(0);
 
-            drive(0.5,0.5,0.5,0.5,1000); // forward for 1 second
 
         }
     }
