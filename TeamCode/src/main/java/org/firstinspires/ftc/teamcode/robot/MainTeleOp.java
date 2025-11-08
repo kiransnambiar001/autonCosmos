@@ -53,6 +53,7 @@ public class MainTeleOp extends LinearOpMode {
         boolean y2prevState = false;
 
         // Auto-shoot sequence tracking
+        boolean isIntakeRunning = false;
         boolean isAutoShooting = false;
         double spoolUpEndTime = 0;
         double outtakePower = 0;
@@ -71,9 +72,10 @@ public class MainTeleOp extends LinearOpMode {
 
             // ===== GAMEPAD 2 INPUTS =====
             double ly2 = gamepad2.left_stick_y;
-            double ry2 = gamepad2.right_stick_y;
+            double ry2 = -gamepad2.right_stick_y;
             double lt2state = gamepad2.left_trigger;
             double rt2state = gamepad2.right_trigger;
+            boolean rb2state = gamepad2.right_bumper;
             boolean a2state = gamepad2.a; // storage on/off
             boolean b2state = gamepad2.b; // outtake preset for close shoot
             boolean y2state = gamepad2.y; // outtake preset for far shoot
@@ -105,26 +107,26 @@ public class MainTeleOp extends LinearOpMode {
             } else if (ly2 <= -0.3) {
                 robotIntake.run(-1.0);
             } else {
-                if (a2state && !a2prevState) {
-                    robotIntake.runForTime(1.0, 5.0);
-                }
+                if (!robotIntake.isTimedRunActive) {robotIntake.run(0.0);}
+                robotIntake.run(0.0);
+                if (a2state && !a2prevState) {robotIntake.runForTime(1.0, 5.0);}
             }
             a2prevState = a2state;
 
             // ===== STORAGE CONTROL =====
             robotStorage.update();
 
-            if (ry2 >= 0.3) {
+            if (rt2state >= 0.3 && !rb2state) {
                 robotStorage.run(1.0);
-            } else if (ry2 <= -0.3) {
+            } else if (rb2state && rt2state < 0.3) {
                 robotStorage.run(-1.0);
             } else {
                 robotStorage.run(0.0);
             }
 
             // ===== OUTTAKE PRESETS & AUTO-SHOOT =====
-            final double spoolUpTime = 1500; // 1.5 seconds
-            final double storageTime = 750; // 0.75 seconds
+            final double spoolUpTime = 5000; // 1.5 seconds
+            final double storageTime = 3000 ; // 0.75 seconds
             double currentOuttakePower;
 
             // Start auto-shoot sequence
@@ -193,10 +195,6 @@ public class MainTeleOp extends LinearOpMode {
         }
     }
 
-    /**
-     * Initialize drivetrain motors for TeleOp operation
-     * This ensures motors are in the correct mode after autonomous
-     */
     private void initializeDrivetrainForTeleOp() {
         // Reset encoders to clear any residual targets from autonomous
         robotHardware.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -224,9 +222,6 @@ public class MainTeleOp extends LinearOpMode {
         robotHardware.backRight.setPower(0);
     }
 
-    /**
-     * Update drivetrain based on joystick inputs
-     */
     private void updateDriveBase(double ly, double lx, double rx, double lt1state, double imuHeading, boolean fieldCentric) {
         // Speed multiplier for slow mode
         double speedMultiplier = (lt1state > 0.5) ? 0.3 : 1.0;

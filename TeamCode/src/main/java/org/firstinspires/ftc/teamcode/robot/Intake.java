@@ -7,7 +7,7 @@ public class Intake {
     private final Hardware robotHardware;
     private final ElapsedTime timer = new ElapsedTime();
     private boolean state = false;
-    private boolean isTimedRunActive = false;
+    public boolean isTimedRunActive = false;
     private double stopTimeInSeconds = 0;
 
     public Intake(Hardware hardware) {
