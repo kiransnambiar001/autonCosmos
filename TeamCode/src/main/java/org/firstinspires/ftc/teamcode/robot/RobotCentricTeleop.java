@@ -10,6 +10,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode; // For linear OpMod
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp; // For TeleOp OpModes
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.IMU;
+import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
@@ -20,8 +25,9 @@ public class RobotCentricTeleop extends LinearOpMode {
 
 
     // Create hardware object
-    Hardware robotHardware = new Hardware(gamepad1,gamepad2);
-
+    Hardware robotHardware;
+    GamepadEx pad1;
+    GamepadEx pad2;
     TriggerReader rt1Reader;
 
 
@@ -30,7 +36,7 @@ public class RobotCentricTeleop extends LinearOpMode {
 
         robotHardware.initialize(hardwareMap);
 
-        rt1Reader = new TriggerReader(robotHardware.pad1, GamepadKeys.Trigger.RIGHT_TRIGGER);
+        rt1Reader = new TriggerReader(pad1, GamepadKeys.Trigger.RIGHT_TRIGGER);
 
         float speedMultiplier = 1.0f;
         boolean slowMode = false;
@@ -47,9 +53,9 @@ public class RobotCentricTeleop extends LinearOpMode {
         while (opModeIsActive()) {
 
             // get data from controller
-            double ly = -(robotHardware.pad1.getLeftY()); // forward/backward driving
-            double lx = robotHardware.pad1.getLeftX(); // strafing
-            double rx = robotHardware.pad1.getRightX(); // turning
+            double ly = -(pad1.getLeftY()); // forward/backward driving
+            double lx = pad1.getLeftX(); // strafing
+            double rx = pad1.getRightX(); // turning
 
             if (rt1Reader.isDown()) {
                 slowMode = !slowMode;
@@ -91,7 +97,6 @@ public class RobotCentricTeleop extends LinearOpMode {
             telemetry.addData("BackLeft Motor Power", backLeftPower);
             telemetry.addData("BackRight Motor Power", backRightPower);
             telemetry.update();*/
-            //Im stupi
         }
     }
 }
