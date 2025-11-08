@@ -86,15 +86,15 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
 //            else {outtakePower = 0;} // stop outtake
 
             // outtake power control dpad
-            if (dpu2) {outtakePower += 0.1;} // d pad up increases power
-            else if (dpd2) {outtakePower -= 0.1;} // d pad down decreases power
+            if (dpu2) {outtakePower += 0.05;} // d pad up increases power
+            else if (dpd2) {outtakePower -= 0.05;} // d pad down decreases power
 
             // outtake power limits
 
 //            if (outtakePower >= 0.7) {outtakePower = 0.7;} // max power 0.7
 //            else if (outtakePower <= 0) {outtakePower = 0;} // min power 0
 //
-            outtakePower = Math.max(0, Math.min(0.7, outtakePower));
+            outtakePower = Math.max(0, Math.min(0.8, outtakePower));
 
             // set outtake power with storage control
 //            if (lt2state >= 0.5) {outtakePower *= 0.45;} else {outtakePower*=0.7;}
@@ -121,11 +121,13 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
         double adjLy, adjLx;
 
         if (fieldCentric) {
-            adjLx = -ly * Math.sin(imuHeading) + lx * Math.cos(imuHeading);
-            adjLy = ly * Math.cos(imuHeading) + lx * Math.sin(imuHeading);
+            // This is the standard 2D rotation matrix. You were missing the first line.
+            adjLx = lx * Math.cos(-imuHeading) - ly * Math.sin(-imuHeading); // THIS LINE WAS MISSING
+            adjLy = lx * Math.sin(-imuHeading) + ly * Math.cos(-imuHeading);
         }
         else {
-            adjLx = lx; adjLy = ly;
+            adjLx = lx;
+            adjLy = ly;
         }
 
         double frontLeftPower = (adjLy + adjLx + rx)*speedMultiplier;
@@ -133,7 +135,7 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
         double backLeftPower = (adjLy - adjLx + rx)*speedMultiplier;
         double backRightPower = (adjLy + adjLx - rx)*speedMultiplier;
 
-        // limit max motor power
+        // Get the motor with the highest power
         double maxPower = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
         maxPower = Math.max(maxPower, Math.abs(backLeftPower));
         maxPower = Math.max(maxPower, Math.abs(backRightPower));
