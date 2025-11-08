@@ -1,59 +1,174 @@
 package org.firstinspires.ftc.teamcode.robot;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-/**
- * This file contains a minimal example of a Linear "OpMode". An OpMode is a 'program' that runs
- * in either the autonomous or the TeleOp period of an FTC match. The names of OpModes appear on
- * the menu of the FTC Driver Station. When an selection is made from the menu, the corresponding
- * OpMode class is instantiated on the Robot Controller and executed.
- *
- * Remove the @Disabled annotation on the next line or two (if present) to add this OpMode to the
- * Driver Station OpMode list, or add a @Disabled annotation to prevent this OpMode from being
- * added to the Driver Station.
- */
 @Autonomous(name="RobotAutonGoalSideBlue", group="Robot")
-
 public class RobotAutonGoalSideBlue extends LinearOpMode {
 
-    Hardware robotHardware = new Hardware();
+    // Power constants
+    private static final double MOVE_POWER = 0.6;
+    private static final double TURN_POWER = 0.5;
+    private static final int COMMAND_DELAY_MS = 100; // Small delay between commands
 
     @Override
     public void runOpMode() {
 
-        robotHardware.initialize(hardwareMap);
+        // Initialize all hardware and subsystems
+        Hardware robotHardware = new Hardware();
+        robotHardware.initialize(hardwareMap, true);
+        Drivetrain drivetrain = new Drivetrain(robotHardware);
+        Intake intake = new Intake(robotHardware);
+        Storage storage = new Storage(robotHardware);
+        Outtake outtake = new Outtake(robotHardware);
 
-        telemetry.addData("Status", "Initialized");
+        telemetry.addData("Status", "Initialized and Ready");
+        telemetry.addData("Path", "Blue Alliance, Far Side");
         telemetry.update();
-        // Wait for the game to start (driver presses PLAY)
+
         waitForStart();
 
-        // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
-            telemetry.addData("Status", "Running");
-            telemetry.update();
+        if (opModeIsActive()) {
+            try {
+                telemetry.addData("Status", "Running Autonomous");
+                telemetry.update();
 
-            drive(0.75,0.75,0.75,0.75, 2000); // forward until CLOSE shoot zone
-            drive(0.4,-0.4,0.4,-0.4,750); // turn 45 degrees to the right
+                // Step 1: Move forward 30 inches (76.2 cm)
+                logStep("Moving backwards 76.2 cm");
+                drivetrain.move(76.2, MOVE_POWER);
+                sleep(COMMAND_DELAY_MS);
 
-            robotHardware.intakeMotor.setPower(0.7);
-            robotHardware.outtakeMotor.setPower(0.7);
-            robotHardware.intakeMotor.setPower(0);
-            robotHardware.outtakeMotor.setPower(0);
+                // Step 3: Power Outtake
+                logStep("Powering Outtake Power w/ 'Far' Preset");
+                double outtakePower = outtake.setPreset("close");
+                outtake.run(outtakePower);
+                sleep(1000); // longer sleep to allow flywheel to speed up
+
+                // Step 4: Power Storage and intake while outtake is running
+                logStep("Turning on storage and intake motors"); // feeding balls into outtake
+                intake.run(1.0);
+                storage.run(1.0);
+                sleep(3000); // extra sleep to ensure launching
+
+                // Step 5: Turn off outtake, intake, and storage
+                logStep("Turning off outtake, intake, and storage motors");
+                intake.run(0);
+                storage.run(0);
+                outtake.run(0);
+                robotHardware.timer.wait(COMMAND_DELAY_MS);
+
+                // Step 6: Turn right 90 degrees
+//                logStep("Turning left 90 degrees");
+//                drivetrain.turn(90, TURN_POWER);
+//                sleep(COMMAND_DELAY_MS);
+//
+//                // Step 7: Move Forward 24 inches (60.96 cm)
+//                logStep("Move forward 60.96 cm");
+//                drivetrain.move(60.96, MOVE_POWER);
+//                sleep(COMMAND_DELAY_MS);
 
 
+
+//                // Step 1: Move forward 36 inches (91.44 cm)
+//                logStep("Moving forward 91.44 cm");
+//                drivetrain.move(91.44, MOVE_POWER);
+//                sleep(COMMAND_DELAY_MS);
+//
+//                // Step 2: Turn 90 degrees left
+//                logStep("Turning 90 degrees");
+//                drivetrain.turn(90, TURN_POWER);
+//                sleep(COMMAND_DELAY_MS);
+//
+//                // Step 3: Move forward 24 inches (60.96 cm)
+//                logStep("Moving forward 60.96 cm");
+//                drivetrain.move(60.96, MOVE_POWER);
+//                sleep(COMMAND_DELAY_MS);
+//
+//                // Step 4: Turn 90 degrees right
+//                logStep("Turning -90 degrees");
+//                drivetrain.turn(-90, TURN_POWER);
+//                sleep(COMMAND_DELAY_MS);
+//
+//                // Step 5: Run intake and move forward slowly to collect
+//                logStep("Collecting artifact");
+//                intake.run(1.0);
+//                sleep(COMMAND_DELAY_MS);
+//                drivetrain.move(25.4, MOVE_POWER * 0.5);
+//                sleep(500);
+//                intake.run(0.0);
+//                sleep(COMMAND_DELAY_MS);
+//
+//                // Step 6: Move backward 24 inches (60.96 cm)
+//                logStep("Moving backward 60.96 cm");
+//                drivetrain.move(-60.96, MOVE_POWER);
+//                sleep(COMMAND_DELAY_MS);
+//
+//                // Step 7: Turn 90 degrees right
+//                logStep("Turning -90 degrees");
+//                drivetrain.turn(-90, TURN_POWER);
+//                sleep(COMMAND_DELAY_MS);
+//
+//                // Step 8: Move forward 24 inches (60.96 cm)
+//                logStep("Moving forward 60.96 cm");
+//                drivetrain.move(60.96, MOVE_POWER);
+//                sleep(COMMAND_DELAY_MS);
+//
+//                // Step 9: Turn 90 degrees left
+//                logStep("Turning 90 degrees");
+//                drivetrain.turn(90, TURN_POWER);
+//                sleep(COMMAND_DELAY_MS);
+//
+//                // Step 10: Launch 2 artifacts
+//                logStep("Preparing to launch artifacts");
+//                double launchPower = outtake.setPreset("close");
+//                outtake.run(launchPower);
+//                sleep(1500); // Spool up time
+//
+//                logStep("Launching first artifact");
+//                storage.run(1.0);
+//                sleep(750);
+//                storage.run(0.0);
+//                sleep(500);
+//
+//                logStep("Launching second artifact");
+//                storage.run(1.0);
+//                sleep(750);
+//                storage.run(0.0);
+//                sleep(COMMAND_DELAY_MS);
+//
+//                outtake.run(0.0);
+//                sleep(COMMAND_DELAY_MS);
+//
+//                // Step 11: Final positioning
+//                logStep("Final positioning");
+//                drivetrain.move(33.02, MOVE_POWER);
+//                sleep(COMMAND_DELAY_MS);
+
+                // Ensure all motors are stopped
+                drivetrain.stopMotors();
+                intake.run(0.0);
+                storage.run(0.0);
+                outtake.run(0.0);
+
+                // End of Sequence
+                telemetry.addData("Status", "Autonomous Complete");
+                telemetry.update();
+
+            } catch (Exception e) {
+                telemetry.addData("ERROR", e.getMessage());
+                telemetry.update();
+
+                // Emergency stop all motors
+                drivetrain.stopMotors();
+                intake.run(0.0);
+                storage.run(0.0);
+                outtake.run(0.0);
+            }
         }
     }
 
-    private void drive(double flp, double frp, double blp, double brp, long millis) {
-        robotHardware.frontLeft.setPower(flp);
-        robotHardware.frontRight.setPower(frp);
-        robotHardware.backLeft.setPower(blp);
-        robotHardware.backLeft.setPower(brp);
-        sleep(millis);
-        robotHardware.frontLeft.setPower(0);
-        robotHardware.frontRight.setPower(0);
-        robotHardware.backLeft.setPower(0);
-        robotHardware.backLeft.setPower(0);
+    private void logStep(String step) {
+        telemetry.addData("Current Step", step);
+        telemetry.update();
     }
 }

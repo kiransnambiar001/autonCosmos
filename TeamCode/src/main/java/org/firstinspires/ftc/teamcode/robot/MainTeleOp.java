@@ -80,7 +80,7 @@ public class MainTeleOp extends LinearOpMode {
             boolean b2state = gamepad2.b; // outtake preset for close shoot
             boolean y2state = gamepad2.y; // outtake preset for far shoot
             boolean options2state = gamepad2.options;
-            boolean dpu2 = gamepad2.dpad_up;
+            boolean dpu2 = gamepad2.dpad_up; //
             boolean dpd2 = gamepad2.dpad_down;
 
             double imuHeading = robotHardware.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
@@ -89,13 +89,11 @@ public class MainTeleOp extends LinearOpMode {
             // Field centric toggle
             if (home1state && !home1prevState && fieldCentric) {
                 robotHardware.imu.resetYaw();
-            }
-            home1prevState = home1state;
+            } home1prevState = home1state;
 
             if (options1state && !options1prevState) {
                 fieldCentric = !fieldCentric;
-            }
-            options1prevState = options1state;
+            } options1prevState = options1state;
 
             updateDriveBase(ly1, lx1, rx1, lt1state, imuHeading, fieldCentric);
 
