@@ -35,12 +35,21 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
         boolean options1prevState = false;
         boolean fieldCentric = true;
         boolean home2prevState = false;
+        double intakePower;
+
+        // ...
         double outtakePower = 0;
+        double closeShotPower = 0.45;
+        double farShotPower = 0.70;
         boolean storageState = false;
+
         boolean dpu2_prevState = false;
         boolean dpd2_prevState = false;
         boolean a2_prevState = false;
+        boolean rt2_prevState = false;
+        boolean outtakeState = false;
         double storageStopTime = 0;
+        double outtakeStopTime = 0;
 
         robotHardware.imu.resetYaw();
 
@@ -58,8 +67,10 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
             double ly2 = gamepad2.left_stick_y;
             double ry2 = gamepad2.right_stick_y;
             double lt2state = gamepad2.left_trigger; // slow mode
-            boolean a2state = gamepad2.a;
-            boolean b2state = gamepad2.b;
+            double rt2state= gamepad2.right_trigger;
+            boolean a2state = gamepad2.a; // storage on/off
+            boolean b2state = gamepad2.b; // outtake preset for close shoot
+            boolean x2state = gamepad2.x; // outtake preset for far shoot
             boolean home2state = gamepad2.options;
             boolean dpu2 = gamepad2.dpad_up;
             boolean dpd2 = gamepad2.dpad_down;
@@ -78,54 +89,68 @@ public class ImuFieldCentricTeleop  extends LinearOpMode {
             } options1prevState = options1state;
             updateDriveBase(ly1, lx1, rx1, lt1state, imuHeading, fieldCentric);
 
-            // intake
-            double intakePower;
+            // intake *************************
             if (ly2 >= 0.5) {intakePower = 1;}
             else if (ly2 <= -0.5) {intakePower = -1;}
             else {intakePower=0;}
             robotHardware.intakeMotor.setPower(intakePower);
+            // intake *************************
 
-//            // outtake power control ry2
-//            if (ry2 >= 0.75) {outtakePower = 0.7;} // full power outtake
-//            else if (ry2 >= 0.5) {outtakePower = 0.5;} // half power outtake
-//            else if (ry2 >= 0.25) {outtakePower = 0.3;} // low power outtake
-//            else {outtakePower = 0;} // stop outtake
 
+            // outtake *********************************************************************************
+            final double OUTTAKE_IDLE_POWER = 0.2;
+            final double OUTTAKE_MAX_POWER = 0.7;
             // outtake power control dpad
-            if (dpu2 && !dpu2_prevState) {
-                outtakePower += 0.05; // Increment power percentage only once per press
-            } else if (dpd2 && !dpd2_prevState) {
-                outtakePower -= 0.05; // Decrement power percentage only once per press
+            if (dpu2 && !dpu2_prevState && outtakePower <= OUTTAKE_MAX_POWER) {
+                outtakePower += 0.05;
+            } else if (dpd2 && !dpd2_prevState && outtakePower >= OUTTAKE_IDLE_POWER) {
+                outtakePower -= 0.05;
             }
 
             dpu2_prevState = dpu2;
             dpd2_prevState = dpd2;
 
-            outtakePower = Math.max(0, Math.min(0.8, outtakePower));
-
             double targetRpm = outtakePower * Hardware.OUTTAKE_MAX_RPM;
-            double targetTps = (targetRpm / 60.0) * Hardware.OUTTAKE_TPR;
+            double targetTps = (targetRpm / 60) * Hardware.OUTTAKE_TPR;
 
-            robotHardware.outtakeMotor.setVelocity(targetTps);
+            if (b2state)
+            {
+                outtakePower = 0.45;
+                robotHardware.outtakeMotor.setVelocity(targetTps);
+            }
+            else if (x2state)
+            {
+                outtakePower = 0.7;
+                robotHardware.outtakeMotor.setVelocity(targetTps);
+            }
+            else
+            {
+                outtakePower = 0.2;
+            }
 
-            // set outtake power with storage control
-            // if (lt2state >= 0.5) {outtakePower *= 0.45;} else {outtakePower*=0.7;}
-            /*if (home2state && !home2prevState) {
-                storageState = !storageState;
-                if (storageState) {robotHardware.storage.setPower(1);}
-                else {robotHardware.storage.setPower(0);}
-            } home2prevState = home2state;*/
+            // outtake *********************************************************************************
 
+            /*double currentOuttakeTime = robotHardware.timer.milliseconds();
+            if (rt2state > 0.5 && !rt2_prevState && !outtakeState) {
+                outtakeState = true;
+                robotHardware.outtakeMotor.setVelocity(targetTps);
+                outtakeStopTime = currentOuttakeTime + 2000;
+            }
+            if (outtakeState && currentOuttakeTime >= outtakeStopTime) {
+                outtakeState = false;
+                robotHardware.outtakeMotor.setPower(OUTTAKE_CONST_POWER);
+            }
+            rt2_prevState = rt2state > 0.5;*/
 
-            double currentTime = robotHardware.timer.milliseconds();
+            double currentStorageTime = robotHardware.timer.milliseconds();
             if (a2state && !a2_prevState && !storageState) {
                 storageState = true;
-                robotHardware.storage.setPower(1.0);
-                storageStopTime = currentTime + 3000;
+                robotHardware.storage.setPower(1);
+                storageStopTime = currentStorageTime + 1500;
             }
-            if (storageState && currentTime >= storageStopTime) {
+            if (storageState && currentStorageTime >= storageStopTime) {
                 storageState = false;
-                robotHardware.storage.setPower(0.0);
+                robotHardware.storage.setPower(0);
             }
             a2_prevState = a2state;
 
