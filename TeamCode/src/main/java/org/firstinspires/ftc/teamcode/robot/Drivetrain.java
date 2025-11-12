@@ -34,19 +34,15 @@ public class Drivetrain {
         // Calculate target position
         int ticks = (int) (cm * TICKS_PER_CM);
 
-        // Reset encoders to ensure clean start
         setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        // Set target positions for all motors
         hw.frontLeft.setTargetPosition(ticks);
         hw.frontRight.setTargetPosition(ticks);
         hw.backLeft.setTargetPosition(ticks);
         hw.backRight.setTargetPosition(ticks);
 
-        // Switch to RUN_TO_POSITION mode
         setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        // Set power (always positive in RUN_TO_POSITION)
         double absPower = Math.abs(power);
         hw.frontLeft.setPower(absPower);
         hw.frontRight.setPower(absPower);
@@ -56,44 +52,33 @@ public class Drivetrain {
         // Wait for movement to complete with timeout
         runtime.reset();
         while (isBusy() && runtime.seconds() < TIMEOUT_SECONDS) {
-            // Optional: Add telemetry here for debugging
         }
 
-        // Stop all motors
         stopMotors();
 
-        // Return to encoder mode for future operations
         setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void turn(double angle, double power) {
         if (angle == 0) return;
 
-        // Switch to run without encoder for turning
         setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        // Reset IMU yaw
         hw.imu.resetYaw();
 
-        // Determine turn direction
         double turnPower = angle > 0 ? Math.abs(power) : -Math.abs(power);
 
-        // Set motor powers for turning
         hw.frontLeft.setPower(turnPower);
         hw.backLeft.setPower(turnPower);
         hw.frontRight.setPower(-turnPower);
         hw.backRight.setPower(-turnPower);
 
-        // Wait for turn to complete with timeout
         runtime.reset();
         while (Math.abs(getYaw()) < Math.abs(angle) && runtime.seconds() < TIMEOUT_SECONDS) {
-            // Optional: Add telemetry here for debugging
         }
 
-        // Stop all motors
         stopMotors();
 
-        // Return to encoder mode
         setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 

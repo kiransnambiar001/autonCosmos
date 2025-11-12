@@ -111,7 +111,7 @@ public class MainTeleOp extends LinearOpMode {
             }
             a2prevState = a2state;
 
-            // ===== STORAGE CONTROL =====
+            //          Storage Control
             robotStorage.update();
 
             if (rt2state >= 0.3 && !rb2state) {
@@ -122,9 +122,9 @@ public class MainTeleOp extends LinearOpMode {
                 robotStorage.run(0.0);
             }
 
-            // ===== OUTTAKE PRESETS & AUTO-SHOOT =====
-            final double spoolUpTime = 5000; // 1.5 seconds
-            final double storageTime = 3000 ; // 0.75 seconds
+            //       Outtake presets & auto shoot
+            final double spoolUpTime = 5000;
+            final double storageTime = 3000 ;
             double currentOuttakePower;
 
             // Start auto-shoot sequence
@@ -134,7 +134,7 @@ public class MainTeleOp extends LinearOpMode {
             }
 
             if (isAutoShooting) {
-                // Check if spool-up time has elapsed
+                // Check if spool up time has elapsed
                 if (robotHardware.timer.milliseconds() >= spoolUpEndTime) {
                     robotStorage.runForTime(1.0, storageTime / 1000.0);
                     isAutoShooting = false;
@@ -160,7 +160,7 @@ public class MainTeleOp extends LinearOpMode {
                 }
             }
 
-            // Fine-tune active preset
+            // Fine tune active preset
             if (dpu2 && !dpu2prevState) {
                 robotOuttake.tuneActivePreset(0.03);
             } else if (dpd2 && !dpd2prevState) {
@@ -181,7 +181,6 @@ public class MainTeleOp extends LinearOpMode {
             b2prevState = b2state;
             y2prevState = y2state;
 
-            // ===== TELEMETRY =====
             telemetry.addData("Status", "Running");
             telemetry.addData("Field Centric", fieldCentric ? "ON" : "OFF");
             telemetry.addData("Auto-Shooting", isAutoShooting ? "ACTIVE" : "IDLE");
@@ -194,26 +193,21 @@ public class MainTeleOp extends LinearOpMode {
     }
 
     private void initializeDrivetrainForTeleOp() {
-        // Reset encoders to clear any residual targets from autonomous
         robotHardware.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robotHardware.frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robotHardware.backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robotHardware.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        // Set to RUN_WITHOUT_ENCODER for direct power control in TeleOp
-        // This is more responsive than RUN_USING_ENCODER for manual driving
         robotHardware.frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robotHardware.frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robotHardware.backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robotHardware.backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        // Set zero power behavior to brake for better control
         robotHardware.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         robotHardware.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         robotHardware.backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         robotHardware.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // Initialize all motors to zero power
         robotHardware.frontLeft.setPower(0);
         robotHardware.frontRight.setPower(0);
         robotHardware.backLeft.setPower(0);
@@ -221,12 +215,10 @@ public class MainTeleOp extends LinearOpMode {
     }
 
     private void updateDriveBase(double ly, double lx, double rx, double lt1state, double imuHeading, boolean fieldCentric) {
-        // Speed multiplier for slow mode
         double speedMultiplier = (lt1state > 0.5) ? 0.3 : 1.0;
 
         double adjLy, adjLx;
 
-        // Apply field-centric transformation if enabled
         if (fieldCentric) {
             adjLx = lx * Math.cos(-imuHeading) - ly * Math.sin(-imuHeading);
             adjLy = lx * Math.sin(-imuHeading) + ly * Math.cos(-imuHeading);
@@ -235,13 +227,11 @@ public class MainTeleOp extends LinearOpMode {
             adjLy = ly;
         }
 
-        // Calculate motor powers for mecanum drive
         double frontLeftPower = (adjLy + adjLx + rx) * speedMultiplier;
         double frontRightPower = (adjLy - adjLx - rx) * speedMultiplier;
         double backLeftPower = (adjLy - adjLx + rx) * speedMultiplier;
         double backRightPower = (adjLy + adjLx - rx) * speedMultiplier;
 
-        // Normalize powers if any exceed 1.0
         double maxPower = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
         maxPower = Math.max(maxPower, Math.abs(backLeftPower));
         maxPower = Math.max(maxPower, Math.abs(backRightPower));
@@ -261,7 +251,6 @@ public class MainTeleOp extends LinearOpMode {
         prevBackLeftPower += Math.max(-RAMP_RATE, Math.min(RAMP_RATE, backLeftPower - prevBackLeftPower));
         prevBackRightPower += Math.max(-RAMP_RATE, Math.min(RAMP_RATE, backRightPower - prevBackRightPower));
 
-        // Set motor powers
         robotHardware.frontLeft.setPower(prevFrontLeftPower);
         robotHardware.frontRight.setPower(prevFrontRightPower);
         robotHardware.backLeft.setPower(prevBackLeftPower);

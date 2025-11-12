@@ -13,8 +13,6 @@ public class Storage {
         this.robotHardware = hardware;
     }
 
-    // This method now correctly takes duration in SECONDS.
-    // This method now correctly takes duration in MILLISECONDS.
     public void runForTime(double power, double durationMs) {
         if (!isTimedRunActive) {
             this.isTimedRunActive = true;
@@ -31,7 +29,6 @@ public class Storage {
     }
 
     public void update() {
-        // The check now correctly uses .milliseconds()
         if (isTimedRunActive && timer.milliseconds() >= stopTime) {
             run(0);
         }
