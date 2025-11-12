@@ -5,51 +5,52 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class Drivetrain {
-    private final Hardware hw;
+    private final Hardware robotHardware;
     private static final double TICKS_PER_REV = 537.7;
     private static final double TICKS_PER_CM = TICKS_PER_REV / (Hardware.WHEEL_DIAMETER_CM * Math.PI);
     private static final double TIMEOUT_SECONDS = 5.0;
 
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
 
-    public Drivetrain(Hardware hw) {
-        this.hw = hw;
+    public Drivetrain(Hardware hardware)
+    {
+        robotHardware = hardware;
         initializeMotors();
     }
 
-    private void initializeMotors() {
+    private void initializeMotors()
+    {
         setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Set zero power behavior
-        hw.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        hw.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        hw.backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        hw.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robotHardware.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robotHardware.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robotHardware.backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robotHardware.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    public void move(double cm, double power) {
+    public void move(double cm, double power)
+    {
         if (cm == 0) return;
 
-        // Calculate target position
         int ticks = (int) (cm * TICKS_PER_CM);
 
         setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        hw.frontLeft.setTargetPosition(ticks);
-        hw.frontRight.setTargetPosition(ticks);
-        hw.backLeft.setTargetPosition(ticks);
-        hw.backRight.setTargetPosition(ticks);
+        robotHardware.frontLeft.setTargetPosition(ticks);
+        robotHardware.frontRight.setTargetPosition(ticks);
+        robotHardware.backLeft.setTargetPosition(ticks);
+        robotHardware.backRight.setTargetPosition(ticks);
 
         setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         double absPower = Math.abs(power);
-        hw.frontLeft.setPower(absPower);
-        hw.frontRight.setPower(absPower);
-        hw.backLeft.setPower(absPower);
-        hw.backRight.setPower(absPower);
+        robotHardware.frontLeft.setPower(absPower);
+        robotHardware.frontRight.setPower(absPower);
+        robotHardware.backLeft.setPower(absPower);
+        robotHardware.backRight.setPower(absPower);
 
-        // Wait for movement to complete with timeout
         runtime.reset();
         while (isBusy() && runtime.seconds() < TIMEOUT_SECONDS) {
         }
@@ -59,22 +60,24 @@ public class Drivetrain {
         setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void turn(double angle, double power) {
+    public void turn(double angle, double power)
+    {
         if (angle == 0) return;
 
         setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        hw.imu.resetYaw();
+        robotHardware.imu.resetYaw();
 
         double turnPower = angle > 0 ? Math.abs(power) : -Math.abs(power);
 
-        hw.frontLeft.setPower(turnPower);
-        hw.backLeft.setPower(turnPower);
-        hw.frontRight.setPower(-turnPower);
-        hw.backRight.setPower(-turnPower);
+        robotHardware.frontLeft.setPower(turnPower);
+        robotHardware.backLeft.setPower(turnPower);
+        robotHardware.frontRight.setPower(-turnPower);
+        robotHardware.backRight.setPower(-turnPower);
 
         runtime.reset();
-        while (Math.abs(getYaw()) < Math.abs(angle) && runtime.seconds() < TIMEOUT_SECONDS) {
+        while (Math.abs(getYaw()) < Math.abs(angle) && runtime.seconds() < TIMEOUT_SECONDS)
+        {
         }
 
         stopMotors();
@@ -82,46 +85,52 @@ public class Drivetrain {
         setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void stopMotors() {
-        hw.frontLeft.setPower(0);
-        hw.frontRight.setPower(0);
-        hw.backLeft.setPower(0);
-        hw.backRight.setPower(0);
+    public void stopMotors()
+    {
+        robotHardware.frontLeft.setPower(0);
+        robotHardware.frontRight.setPower(0);
+        robotHardware.backLeft.setPower(0);
+        robotHardware.backRight.setPower(0);
     }
 
-    private void setPower(double power) {
-        hw.frontLeft.setPower(power);
-        hw.frontRight.setPower(power);
-        hw.backLeft.setPower(power);
-        hw.backRight.setPower(power);
+    private void setPower(double power)
+    {
+        robotHardware.frontLeft.setPower(power);
+        robotHardware.frontRight.setPower(power);
+        robotHardware.backLeft.setPower(power);
+        robotHardware.backRight.setPower(power);
     }
 
-    private void setMode(DcMotor.RunMode mode) {
-        hw.frontLeft.setMode(mode);
-        hw.frontRight.setMode(mode);
-        hw.backLeft.setMode(mode);
-        hw.backRight.setMode(mode);
-    }
-
-
-    private boolean isBusy() {
-        return hw.frontLeft.isBusy() ||
-                hw.frontRight.isBusy() ||
-                hw.backLeft.isBusy() ||
-                hw.backRight.isBusy();
+    private void setMode(DcMotor.RunMode mode)
+    {
+        robotHardware.frontLeft.setMode(mode);
+        robotHardware.frontRight.setMode(mode);
+        robotHardware.backLeft.setMode(mode);
+        robotHardware.backRight.setMode(mode);
     }
 
 
-    private double getYaw() {
-        return hw.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+    private boolean isBusy()
+    {
+        return robotHardware.frontLeft.isBusy() ||
+                robotHardware.frontRight.isBusy() ||
+                robotHardware.backLeft.isBusy() ||
+                robotHardware.backRight.isBusy();
     }
 
-    public int[] getMotorPositions() {
+
+    private double getYaw()
+    {
+        return robotHardware.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+    }
+
+    public int[] getMotorPositions()
+    {
         return new int[] {
-                hw.frontLeft.getCurrentPosition(),
-                hw.frontRight.getCurrentPosition(),
-                hw.backLeft.getCurrentPosition(),
-                hw.backRight.getCurrentPosition()
+                robotHardware.frontLeft.getCurrentPosition(),
+                robotHardware.frontRight.getCurrentPosition(),
+                robotHardware.backLeft.getCurrentPosition(),
+                robotHardware.backRight.getCurrentPosition()
         };
     }
 }

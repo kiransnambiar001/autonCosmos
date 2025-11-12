@@ -10,22 +10,22 @@ public class Storage {
     private double stopTime = 0;
 
     public Storage(Hardware hardware) {
-        this.robotHardware = hardware;
+        robotHardware = hardware;
     }
 
     public void runForTime(double power, double durationMs) {
         if (!isTimedRunActive) {
-            this.isTimedRunActive = true;
-            this.timer.reset();
-            this.stopTime = timer.milliseconds() + durationMs;
-            this.robotHardware.storage.setPower(power);
+            isTimedRunActive = true;
+            timer.reset();
+            stopTime = timer.milliseconds() + durationMs;
+            robotHardware.storage.setPower(power);
         }
     }
 
 
     public void run(double power) {
-        this.isTimedRunActive = false;
-        this.robotHardware.storage.setPower(power);
+        isTimedRunActive = false;
+        robotHardware.storage.setPower(power);
     }
 
     public void update() {

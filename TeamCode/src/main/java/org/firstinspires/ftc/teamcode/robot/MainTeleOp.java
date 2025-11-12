@@ -29,20 +29,16 @@ public class MainTeleOp extends LinearOpMode {
         robotStorage = new Storage(robotHardware);
         robotOuttake = new Outtake(robotHardware);
 
-        // CRITICAL: Ensure drivetrain motors are in the correct mode for TeleOp
         initializeDrivetrainForTeleOp();
 
-        // Update telemetry to show INITIALIZED status
         telemetry.addData("Status", "INITIALIZED");
         telemetry.addData("Drive Mode", "Ready for TeleOp");
         telemetry.update();
 
-        // Wait for user to press start button
         waitForStart();
 
         boolean fieldCentric = true;
 
-        // Button state tracking
         boolean home1prevState = false;
         boolean options1prevState = false;
         boolean options2prevState = false;
@@ -52,7 +48,7 @@ public class MainTeleOp extends LinearOpMode {
         boolean b2prevState = false;
         boolean y2prevState = false;
 
-        // Auto-shoot sequence tracking
+        // Auto shoot sequence tracking
         boolean isIntakeRunning = false;
         boolean isAutoShooting = false;
         double spoolUpEndTime = 0;
@@ -62,7 +58,7 @@ public class MainTeleOp extends LinearOpMode {
 
         // Start OpMode loop
         while (opModeIsActive()) {
-            // ===== GAMEPAD 1 INPUTS =====
+            //      Gamepad 1 inputs
             double ly1 = -gamepad1.left_stick_y; // forward/backward driving
             double lx1 = gamepad1.left_stick_x; // strafing
             double rx1 = gamepad1.right_stick_x; // turning
@@ -70,7 +66,7 @@ public class MainTeleOp extends LinearOpMode {
             boolean options1state = gamepad1.options; // field centric toggle
             double lt1state = gamepad1.left_trigger; // slow mode
 
-            // ===== GAMEPAD 2 INPUTS =====
+            //      Gamepad 2 inputs
             double ly2 = gamepad2.left_stick_y;
             double ry2 = -gamepad2.right_stick_y;
             double lt2state = gamepad2.left_trigger;
@@ -85,8 +81,8 @@ public class MainTeleOp extends LinearOpMode {
 
             double imuHeading = robotHardware.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
-            // ===== DRIVETRAIN CONTROL =====
-            // Field centric toggle
+            //      Drivetrain Control
+            //Field centric toggle
             if (home1state && !home1prevState && fieldCentric) {
                 robotHardware.imu.resetYaw();
             } home1prevState = home1state;
@@ -97,7 +93,7 @@ public class MainTeleOp extends LinearOpMode {
 
             updateDriveBase(ly1, lx1, rx1, lt1state, imuHeading, fieldCentric);
 
-            // ===== INTAKE CONTROL =====
+            //      Intake Control
             robotIntake.update();
 
             if (ly2 >= 0.3) {
@@ -111,7 +107,7 @@ public class MainTeleOp extends LinearOpMode {
             }
             a2prevState = a2state;
 
-            //          Storage Control
+            //      Storage Control
             robotStorage.update();
 
             if (rt2state >= 0.3 && !rb2state) {
@@ -122,19 +118,19 @@ public class MainTeleOp extends LinearOpMode {
                 robotStorage.run(0.0);
             }
 
-            //       Outtake presets & auto shoot
+            //      Outtake presets & auto shoot
             final double spoolUpTime = 5000;
             final double storageTime = 3000 ;
             double currentOuttakePower;
 
-            // Start auto-shoot sequence
+            // Start auto shoot sequence
             if (((b2state && !b2prevState) || (y2state && !y2prevState)) && !isAutoShooting) {
                 isAutoShooting = true;
                 spoolUpEndTime = robotHardware.timer.milliseconds() + spoolUpTime;
             }
 
             if (isAutoShooting) {
-                // Check if spool up time has elapsed
+                // Check if spool up time has passed
                 if (robotHardware.timer.milliseconds() >= spoolUpEndTime) {
                     robotStorage.runForTime(1.0, storageTime / 1000.0);
                     isAutoShooting = false;
